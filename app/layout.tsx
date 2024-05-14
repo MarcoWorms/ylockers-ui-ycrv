@@ -32,8 +32,8 @@ const mono = localFont({
   ]})
 
 export const metadata: Metadata = {
-  title: "yPrisma",
-  description: "Put your yPRISMA to work",
+  title: "yCRV",
+  description: "Put your yCRV to work",
 };
 
 export default function RootLayout({
