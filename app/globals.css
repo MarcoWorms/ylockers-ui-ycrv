@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@keyframes rotate {
+	100% {
+		transform: rotate(1turn);
+	}
+}
+
+.rainbow {
+	position: relative;
+	z-index: 0;
+	overflow: hidden;
+
+	&::before {
+		content: '';
+		position: absolute;
+		z-index: -2;
+		left: -50%;
+		top: -250%;
+		width: 200%;
+		height: 600%;
+		background-color: #e11323;
+		background-repeat: no-repeat;
+		background-image:
+			conic-gradient(
+				from 0deg at 50% 50%,
+				#e11323 0deg,
+				#e11323 60deg,
+				#f86f30 60deg,
+				#f86f30 120deg,
+				#ffba2f 120deg,
+				#ffba2f 180deg,
+				#0eb975 180deg,
+				#0eb975 240deg,
+				#1f7acc 240deg,
+				#1f7acc 300deg,
+				#6e49a6 300deg,
+				#6e49a6 360deg
+			);
+		animation: rotate 4s linear infinite;
+    border-radius: 8px;
+	}
+	
+	&::after {
+		content: '';
+		position: absolute;
+		z-index: -1;
+		left: 2px;
+		top: 2px;
+		width: calc(100% - 4px);
+		height: calc(100% - 4px);
+		background: #000A3D;
+		border-radius: 8px;
+	}
+}
+
+.rainbow-no-bg {
+	position: relative;
+	z-index: 0;
+	overflow: hidden;
+
+	&::before {
+		content: '';
+		position: absolute;
+		z-index: -2;
+		left: -50%;
+		top: -250%;
+		width: 200%;
+		height: 600%;
+		background-color: #e11323;
+		background-repeat: no-repeat;
+		background-image:
+			conic-gradient(
+				from 0deg at 50% 50%,
+				#e11323 0deg,
+				#e11323 60deg,
+				#f86f30 60deg,
+				#f86f30 120deg,
+				#ffba2f 120deg,
+				#ffba2f 180deg,
+				#0eb975 180deg,
+				#0eb975 240deg,
+				#1f7acc 240deg,
+				#1f7acc 300deg,
+				#6e49a6 300deg,
+				#6e49a6 360deg
+			);
+		animation: rotate 4s linear infinite;
+    border-radius: 8px;
+	}
+	
+	&::after {
+		content: '';
+		position: absolute;
+		z-index: -1;
+		left: 2px;
+		top: 2px;
+		width: calc(100% - 4px);
+		height: calc(100% - 4px);
+		background: transparent;
+		border-radius: 8px;
+	}
+}
