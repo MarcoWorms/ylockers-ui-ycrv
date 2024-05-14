@@ -32,7 +32,7 @@ export default function Home() {
                       </h3>
                       <div className="mt-2 flex flex-col space-y-2 text-white font-thin white">
                         <p>
-                          {`Each week, Yearn's veCRV position earns revenue from protocol fees and bribes. This is converted to crvUSD stablecoin and distributed to yCRV stakers at the start of the week.`}
+                          {`Each week, Yearn's veCRV position earns revenue from protocol fees and bribes. This isstablecoin and distributed to yCRV stakers at the start of the week.`}
                         </p>
                         <p>
                           {`To begin earning your share, all you need to do is stake your yCRV tokens in the staking contract. You're free to unstake them at any time with no lock-ups or penalties.`}
@@ -65,10 +65,10 @@ export default function Home() {
                       </h3>
                       <div className="mt-2 flex flex-col space-y-2 text-white font-thin">
                         <p>
-                          {`Each week, Yearn claims its share of protocol fees and vote-maximized bribes. These are swapped for yield-bearing crvUSD yVault tokens (yvcrvUSD-A) and deposited directly into the reward distributor contract.`}
+                          {`Each week, Yearn claims its share of protocol fees and vote-maximized bribes. These are swapped for yVaA) and deposited directly into the reward distributor contract.`}
                         </p>
                         <p>
-                          {`Your rewards accrue week over week and are never lost if unclaimed. In fact, they begin earning you additional crvUSD yield from the moment we receive them! When claimed, yvcrvUSD-A vault tokens will be received directly to your wallet.`}
+                          {`Your rewards accrue week over week and are never lost if unclaimed. In fact, they begin earning yyield from the moment we receive them! WhA vault tokens will be received directly to your wallet.`}
                         </p>
                       </div>
                       <h3 className="text-xl font-bold mt-6">
@@ -79,7 +79,7 @@ export default function Home() {
                           {`Not interested in staking, weights, and manual claims? Just want more yCRV and the highest APYs? Then our yCRV auto-compounding vault is for you!`}
                         </p>
                         <p>
-                          {`Once a week, the vault claims its boosted share of crvUSD from the yCRV staker contract, swaps it for more yCRV, and deposits it back into the staker. On top of that, the vault is whitelisted - allowing it to earn max boost immediately on all reinvested yCRV.`}
+                          {`Once a week, the vault claims its boofrom the yCRV staker contract, swaps it for more yCRV, and deposits it back into the staker. On top of that, the vault is whitelisted - allowing it to earn max boost immediately on all reinvested yCRV.`}
                         </p>
                         <p>
                           {`For more information on yCRV and the yLockers ecosystem, read our `}<Link className="underline" href="https://docs.yearn.fi/getting-started/products/ylockers/overview">docs</Link>.
@@ -96,43 +96,43 @@ export default function Home() {
                 <dl className="flex flex-col gap-2 p-4 md:p-6 ">
                   <div className="flex flex-col justify-between md:flex-row">
                     <dt className="text-white">yCRV Boosted Staker</dt>
-                    <a className="cursor-pointer text-xs hover:underline md:text-base" href="https://etherscan.io/address/0x8CeA85eC7f3D314c4d144e34F2206C8Ac0bbadA1">
+                    <a className="cursor-pointer text-xs hover:underline md:text-base" href="https://etherscan.io/address/0xE9A115b77A1057C918F997c32663FdcE24FB873f">
                       <dd className="font-mono">0xE9A115b77A1057C918F997c32663FdcE24FB873f</dd>
                     </a>
                   </div>
                   <div className="flex flex-col justify-between md:flex-row">
                     <dt className="text-white">Rewards Distributor</dt>
-                    <a className="cursor-pointer text-xs hover:underline md:text-base" href="https://etherscan.io/address/0x3Af511B1bdD6A0377e23796aD6B7391d8De68636">
+                    <a className="cursor-pointer text-xs hover:underline md:text-base" href="https://etherscan.io/address/0x653470Ac3B17b5fE195Bf225c716f44190160435">
                       <dd className="font-mono">0x653470Ac3B17b5fE195Bf225c716f44190160435</dd>
                     </a>
                   </div>
                   <div className="flex flex-col justify-between md:flex-row">
                     <dt className="text-white">Boosted Staker Utilities</dt>
-                    <a className="cursor-pointer text-xs hover:underline md:text-base" href="https://etherscan.io/address/0x4dcA4bFA0bAa0C8ce741b92B255D967599d994f0">
+                    <a className="cursor-pointer text-xs hover:underline md:text-base" href="https://etherscan.io/address/0x0111016Ac87124b6Fc3d04ABD038Ab8aB9e94d24">
                       <dd className="font-mono">0x0111016Ac87124b6Fc3d04ABD038Ab8aB9e94d24</dd>
                     </a>
                   </div>
                   <div className="flex flex-col justify-between md:flex-row">
                     <dt className="text-white">yvyCRV</dt>
-                    <a className="cursor-pointer text-xs hover:underline md:text-base" href="https://etherscan.io/address/0x10537D7bD661C9c34F547b38EC662D6FD482Ae95">
+                    <a className="cursor-pointer text-xs hover:underline md:text-base" href="https://etherscan.io/address/0x27B5739e22ad9033bcBf192059122d163b60349D">
                       <dd className="font-mono">0x27B5739e22ad9033bcBf192059122d163b60349D</dd>
                     </a>
                   </div>
                   <div className="flex flex-col justify-between md:flex-row">
                     <dt className="text-white">yvcrvUSD</dt>
-                    <a className="cursor-pointer text-xs hover:underline md:text-base" href="https://etherscan.io/address/0x0000000000000000000000000000000000000000">
-                      <dd className="font-mono">NEXT_PUBLIC_YVcrvUSD=0xBF319dDC2Edc1Eb6FDf9910E39b37Be221C8805F</dd>
+                    <a className="cursor-pointer text-xs hover:underline md:text-base" href="https://etherscan.io/address/0xBF319dDC2Edc1Eb6FDf9910E39b37Be221C8805F">
+                      <dd className="font-mono">0xBF319dDC2Edc1Eb6FDf9910E39b37Be221C8805F</dd>
                     </a>
                   </div>
                   <div className="flex flex-col justify-between md:flex-row">
                     <dt className="text-white">CRV Token</dt>
-                    <a className="cursor-pointer text-xs hover:underline md:text-base" href="https://etherscan.io/address/0xdA47862a83dac0c112BA89c6abC2159b95afd71C">
+                    <a className="cursor-pointer text-xs hover:underline md:text-base" href="https://etherscan.io/address/0xD533a949740bb3306d119CC777fa900bA034cd52">
                       <dd className="font-mono">0xD533a949740bb3306d119CC777fa900bA034cd52</dd>
                     </a>
                   </div>
                    <div className="flex flex-col justify-between md:flex-row">
                     <dt className="text-white">yCRV Token</dt>
-                    <a className="cursor-pointer text-xs hover:underline md:text-base" href="https://etherscan.io/address/0xe3668873D944E4A949DA05fc8bDE419eFF543882">
+                    <a className="cursor-pointer text-xs hover:underline md:text-base" href="https://etherscan.io/address/0xFCc5c47bE19d06BF83eB04298b026F81069ff65b">
                       <dd className="font-mono">0xFCc5c47bE19d06BF83eB04298b026F81069ff65b</dd>
                     </a>
                   </div>
