@@ -396,7 +396,7 @@ const TableComponent = (props: any) => {
   };
   
   const filteredVaultData = vaultData.filter((vault:any) =>
-    vault.strategies.some((strategy:any) => strategy.name.toLowerCase().includes('prisma'))
+    vault.category === "Curve"
   );
 
   const contractReads = useContractReads({
@@ -511,7 +511,7 @@ const TableComponent = (props: any) => {
     <div className="w-full rounded-lg overflow-hidden bg-darker-blue text-white mb-8">
       <div className="flex flex-col md:flex-row items-center justify-between w-full">
         <h1 className="text-4xl md:text-5xl p-6 pt-8 md:p-8 font-[700] pb-0">
-          Prisma Vaults
+          Curve Vaults
         </h1>
         <div className="p-4 md:p-8 w-full md:w-2/3">
           <InputBox
