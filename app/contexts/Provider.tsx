@@ -18,20 +18,20 @@ import env from '@/lib/env';
 
 const queryClient = new QueryClient();
 
-// const newMainnet = Object.assign({}, mainnet, {
-//   "id": 6969,
-//   "rpcUrls": {
-//     "default": {
-//       "http": ["https://virtual.mainnet.rpc.tenderly.co/bb40feda-1904-4527-8de7-347b90c78112"]
-//     }
-//   }
-// })
+const newMainnet = Object.assign({}, mainnet, {
+  "id": 420417,
+  "rpcUrls": {
+    "default": {
+      "http": ["https://virtual.mainnet.rpc.tenderly.co/7f2b806a-8246-4812-a2d0-a289aac841d9"]
+    }
+  }
+})
 
 const config = getDefaultConfig({
   appName: 'yPrisma',
   projectId: '84801a4fb569adb34f184f543b6d1762',
-  // chains: [newMainnet],
-  chains: [mainnet],
+  chains: [newMainnet],
+  // chains: [mainnet],
   wallets: [{
     groupName: 'Popular',
     wallets: [
