@@ -257,7 +257,7 @@ function TabContent(props: { leftActive: any; account: any }) {
             <div className="flex flex-col space-y-6 w-full md:w-1/2 p-4 md:p-8 pt-0">
               <span className="font-semibold">STAKE yCRV - EARN STABLES</span>
               <span className="font-thin opacity-70">
-                {`Stake your yCRV and start earning a share of Yearn's vePRISMA stablecoin revenue today. You'll reach max boost and hit the maximum staking APR after just 4 weeks.`}
+                {`Stake your yCRV and start earning a share of Yearn's veCRV stablecoin revenue today. You'll reach max boost and hit the maximum staking APR after just 4 weeks.`}
               </span>
               <Image alt="charge multiplier" className="" src="/charge.png" width={370} height={136} />
             </div>
