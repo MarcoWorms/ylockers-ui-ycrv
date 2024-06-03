@@ -21,7 +21,7 @@ export default function Home() {
           <h1 className="text-6xl font-bold">Put your<br />yCRV to work</h1>
           <p className="my-8 xl:w-[670px] font-thin sm:whitespace-nowrap">
             {`Each week, Yearn's veCRV position earns revenue from protocol fees and vote-maximized bribes.`}<br />
-            {`This is converted to mkUSD stablecoin and distributed to yCRV stakers.`}
+            {`This is converted to crvUSD stablecoin and distributed to yCRV stakers.`}
           </p>
           <div className="flex flex-wrap items-center space-x-4 flex-col md:flex-row space-y-8 md:space-y-0">
             <Link href="/app/stake">
