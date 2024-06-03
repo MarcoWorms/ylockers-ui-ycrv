@@ -12,7 +12,7 @@ export default function Home() {
   const { data } = useData()
 
   return (
-    <main className="flex flex-col items-center min-h-screen bg-gradient-to-r from-dark-black to-dark-blue text-white">
+    <main className="flex flex-col items-center min-h-screen bg-gradient-to-t from-dark-black to-dark-blue text-white">
       <div className="w-full shadow-lg z-10"></div>
       <Background />
       <Header items={headerItems} selected="Home"/>
@@ -21,13 +21,13 @@ export default function Home() {
           <h1 className="text-6xl font-bold">Put your<br />yCRV to work</h1>
           <p className="my-8 xl:w-[670px] font-thin sm:whitespace-nowrap">
             {`Each week, Yearn's veCRV position earns revenue from protocol fees and vote-maximized bribes.`}<br />
-            {`This is converted to crvUSD stablecoin and distributed to yCRV stakers.`}
+            {`This is converted to mkUSD stablecoin and distributed to yCRV stakers.`}
           </p>
           <div className="flex flex-wrap items-center space-x-4 flex-col md:flex-row space-y-8 md:space-y-0">
             <Link href="/app/stake">
               <Button>Launch App</Button>
             </Link>
-            <h2 className="text-4xl font-bold text-light-blue font-mono">APR {data.utilities && data.utilities.globalAverageApr.toString() !== '0' ? fPercent(bmath.div(data.utilities.globalAverageApr, 10n**18n)) : '--.--%'}</h2>
+            <h2 className="text-4xl font-bold text-light-blue font-mono">APR {data.utilities && data.utilities.globalAverageApr.toString() !== '0' ? fPercent(bmath.div(data.utilities.globalAverageApr, 10n**18n)) : <span title="APR will show when migration period ends after first week.">🌈✨%</span>}</h2>
           </div>
         </div>
       </section>

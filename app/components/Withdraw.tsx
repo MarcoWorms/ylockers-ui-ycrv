@@ -14,7 +14,7 @@ export default function Withdraw({ className }: { className?: string }) {
     parameters: {
       address: env.YPRISMA_STRATEGY,
       abi: abis.Strategy,
-      functionName: 'withdraw',
+      functionName: 'redeem',
       args: (amount: bigint) => [amount, data.account, data.account]
     }
   }} />

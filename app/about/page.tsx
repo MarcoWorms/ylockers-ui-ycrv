@@ -4,7 +4,7 @@ import Background from "../components/Background";
 
 export default function Home() {
   return (
-    <main className="flex flex-col items-center min-h-screen bg-gradient-to-r from-dark-black to-dark-blue text-white">
+    <main className="flex flex-col items-center min-h-screen bg-gradient-to-t from-dark-black to-dark-blue text-white">
       <div className="w-full shadow-lg z-10"></div>
       <Background />
       <Header items={headerItems} selected="About"/>
@@ -17,12 +17,13 @@ export default function Home() {
                   <div className="mb-10 flex flex-col justify-center">
                     <h1 className="mt-28 md:mt-6 block font-black text-5xl"> 
                       {"Let's get your CRV "} 
+                      <br />
                       <span className="bg-clip-text bg-gradient-text text-transparent" style={{color: 'transparent'}}>
                         unlocked
                       </span>
                     </h1>
                   </div>
-                  <div className="mb-8 border-white-200 py-2 text-white-700 md:border-l-4 border-blue md:pl-6">
+                  <div className="mb-8 border-white-200 py-2 text-white-700 md:border-l-4 border-dark-blue md:pl-6">
                     <div>
                       <h2 className="text-3xl font-bold mb-6 mt-2">
                       How does it work?
@@ -32,7 +33,7 @@ export default function Home() {
                       </h3>
                       <div className="mt-2 flex flex-col space-y-2 text-white font-thin white">
                         <p>
-                          {`Each week, Yearn's veCRV position earns revenue from protocol fees and bribes. This isstablecoin and distributed to yCRV stakers at the start of the week.`}
+                          {`Each week, Yearn's veCRV position earns revenue from protocol fees and bribes. This is converted to crvUSD stablecoin and distributed to yCRV stakers at the start of the week.`}
                         </p>
                         <p>
                           {`To begin earning your share, all you need to do is stake your yCRV tokens in the staking contract. You're free to unstake them at any time with no lock-ups or penalties.`}

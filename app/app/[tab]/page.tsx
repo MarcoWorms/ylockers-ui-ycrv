@@ -1,5 +1,6 @@
 "use client";
 
+import { z } from "zod";
 import Image from "next/image";
 import Link from "next/link";
 import InputBox from "../../components/InputBox";
@@ -22,13 +23,15 @@ import Deposit from "../../components/Deposit";
 import Withdraw from "../../components/Withdraw";
 import WithdrawAllFromOldStaker from "../../components/WithdrawAllFromOldStaker";
 
-import { useContractReads, useContractRead } from 'wagmi';
+import { useContractReads } from 'wagmi';
+import { PiVaultLight } from "react-icons/pi";
 import { erc20Abi } from 'viem';
 import { formatUnits } from 'viem';
 import usePrices from "@/hooks/usePrices";
 import bmath, { priced } from "@/lib/bmath";
 import env from '@/lib/env'
 import Background from "../../components/Background";
+import A from "@/app/components/A";
 
 
 function useTab() {
@@ -41,8 +44,9 @@ export default function Home() {
   const { openAccountModal } = useAccountModal();
   const { data } = useData()
 
-  const { data: yprismaVault } = useVault(env.YVMKUSD)
-  const vaultAPR:any = fPercent(yprismaVault?.apr?.netAPR)
+  const { data: yprismaVault } = useVault(env.YPRISMA_STRATEGY)
+  const vaultApr: number = z.number({ coerce: true }).parse(yprismaVault?.apr?.forwardAPR.netAPR ?? 0)
+  const vaultApy: number = (1 + (vaultApr / 52)) ** 52 - 1;
 
   const tab = useTab();
 
@@ -61,14 +65,7 @@ export default function Home() {
   }, [data.strategy.balance, data.strategy.decimals, prices]);
 
   return (
-    <main className="flex flex-col items-center min-h-screen bg-gradient-to-r from-dark-black to-dark-blue text-white">
-      {/* {data.utilities.oldStakerBalance > 0n && (
-        <div className="w-full bg-yellow-200 text-black text-center p-2 z-20">
-          <b>⚠️ Warning: </b>Your wallet has balance of {fTokens(data.utilities.oldStakerBalance, data.staker.decimals)} yPRISMA in the deprecated yPRISMA staker.
-          <WithdrawAllFromOldStaker className="mt-2" />
-          Use the above button to withdraw + claim pending rewards so that you can begin your migration! <Link className="underline" href="https://blog.yearn.fi/ybs-yprisma-launch" target="_blank">Read more.</Link>
-        </div>
-      )} */}
+    <main className="flex flex-col items-center min-h-screen bg-gradient-to-t from-dark-black to-dark-blue text-white">
       <div className="w-full shadow-lg z-10"></div>
       <Background className="opacity-20" />
       <div className="max-w-[1200px] w-full z-10">
@@ -76,10 +73,13 @@ export default function Home() {
         <section className="mt-32 md:mt-[5vh] mx-4 lg:mx-0">
           <div className="w-full flex flex-wrap justify-center items-center mb-12 md:mb-8 space-y-4 md:space-x-8 md:space-y-0 flex-col md:flex-row">
             <Link href="/app/stake"><div className={`${(leftActive) ? 'bg-light-blue' : 'bg-tab-inactive'} rounded-full w-[328px] px-2 py-2`}>
-              <div className="flex justify-between items-center text-lg pl-4">EARN crvUSD <div className={`rounded-full ${leftActive ? 'bg-lighter-blue' : 'bg-tab-inactive-inner'} p-1 px-4`}>{data.utilities && data.utilities.globalAverageApr.toString() !== '0' ? fPercent(bmath.div(data.utilities.globalAverageApr, 10n**18n)) : '--.--%'}</div></div>
+              <div className="flex justify-between items-center text-lg pl-4">EARN crvUSD <div className={`rounded-full ${leftActive ? 'bg-lighter-blue' : 'bg-tab-inactive-inner'} p-1 px-4`}>{data.utilities && data.utilities.globalAverageApr.toString() !== '0' ? fPercent(bmath.div(data.utilities.globalAverageApr, 10n**18n)) : <span title="APR will show when migration period ends after first week.">🌈✨%</span>}</div></div>
             </div></Link>
             <Link href="/app/deposit"><div className={`${(rightActive) ? 'bg-light-blue' : 'bg-tab-inactive'} rounded-full w-[328px] px-2 py-2`}>
-              <div className="flex justify-between items-center text-lg pl-4">EARN yCRV <div className={`rounded-full ${rightActive ? 'bg-lighter-blue' : 'bg-tab-inactive-inner'} p-1 px-4`}>{isNaN(yprismaVault?.apr?.netAPR) || yprismaVault?.apr?.netAPR === 0 ? '--.--%' : vaultAPR}</div></div>
+              <div className="flex justify-between items-center text-lg pl-4">
+                EARN yCRV <div className={`rounded-full ${rightActive ? 'bg-lighter-blue' : 'bg-tab-inactive-inner'} p-1 px-4`}>
+                  {vaultApy > 0 ? fPercent(vaultApy) : <span title="APR will show when migration period ends after first week.">🌈✨%</span>}
+              </div></div>
             </div></Link>
           </div>
           <div className="flex flex-col lg:flex-row justify-center ">
@@ -93,7 +93,7 @@ export default function Home() {
               {leftActive ? (
                 <>
                   <span className="text-light-blue font-bold pb-2">AVERAGE STAKING APR</span>
-                  <span className="text-light-blue text-6xl font-bold mb-[26px]">{data.utilities && data.utilities.globalAverageApr.toString() !== '0' ? fPercent(bmath.div(data.utilities.globalAverageApr, 10n**18n)) : '--.--%'}</span>
+                  <span className="text-light-blue text-6xl font-bold mb-[26px]">{data.utilities && data.utilities.globalAverageApr.toString() !== '0' ? fPercent(bmath.div(data.utilities.globalAverageApr, 10n**18n)) : <span title="APR will show when migration period ends after first week.">🌈✨%</span>}</span>
                   <div className="border-t-2 border-b-2 border-soft-blue my-4 py-6 flex flex-col space-y-2">
                     <div className="flex justify-between items-center pb-4">
                       <span className="font-semibold text-lg">YOUR POSITION</span>
@@ -107,7 +107,7 @@ export default function Home() {
                     </div>
                     <div className="flex justify-between">
                       <span className="font-thin opacity-70	">Your APR</span>
-                      <span className="font-bold">{data.utilities && data.utilities.userApr.toString() !== '0' ? fPercent(bmath.div(data.utilities.userApr, 10n**18n)) : '--.--%'}</span>
+                      <span className="font-bold">{data.utilities && fPercent(bmath.div(data.utilities.userApr, 10n**18n))}</span>
                     </div>
                     {/* <div className="flex justify-between">
                       <span className="font-thin opacity-70	">Boost Multiplier</span>
@@ -131,12 +131,15 @@ export default function Home() {
                       <span className="font-bold">{bmath.div(data.utilities.weeklyRewardAmount, 10n**18n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} crvUSD</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="font-thin opacity-70	">APR </span>
-                      <span className="w-7/12 font-bold flex items-end md:items-center md:justify-end space-x-2">
-                        <span>{data.utilities && bmath.div(data.utilities.globalMinMaxApr.min, 10n**18n) ? fPercent(bmath.div(data.utilities.globalMinMaxApr.min, 10n**18n), 2) : '--.--%'}</span>
+                      <span className="font-thin opacity-70	flex items-center gap-2 whitespace-nowrap">
+                        <div>APR 1x</div>
                         <Image width={20} height={10} alt="right arrow" src="/right-arrow.svg" />
-                        <span>{data.utilities && bmath.div(data.utilities.globalMinMaxApr.max, 10n**18n) ? fPercent(bmath.div(data.utilities.globalMinMaxApr.max, 10n**18n), 2) : '--.--%'}</span>
+                        <div>2.5x</div>
                       </span>
+                      <span className="w-7/12 font-bold flex items-end md:items-center md:justify-end space-x-2">
+                        <span>{data.utilities && bmath.div(data.utilities.globalMinMaxApr.min, 10n**18n) ? fPercent(bmath.div(data.utilities.globalMinMaxApr.min, 10n**18n), 2) : <span title="APR will show when migration period ends after first week.">🌈✨%</span>}</span>
+                        <Image width={20} height={10} alt="right arrow" src="/right-arrow.svg" />
+                        <span>{data.utilities && bmath.div(data.utilities.globalMinMaxApr.max, 10n**18n) ? fPercent(bmath.div(data.utilities.globalMinMaxApr.max, 10n**18n), 2) : <span title="APR will show when migration period ends after first week.">🌈✨%</span>}</span>                     </span>
                     </div>
                     {/* <div className="flex justify-between">
                       <span className="font-thin opacity-70	">Average Boost Multiplier</span>
@@ -147,8 +150,9 @@ export default function Home() {
                 </>
               ) :(
                 <>
-                  <span className="text-light-blue font-bold pb-2">ESTIMATED AUTO-COMPOUND APR</span>
-                  <span className="text-light-blue text-6xl font-bold mb-[26px]">{isNaN(yprismaVault?.apr?.netAPR) || yprismaVault?.apr?.netAPR === 0 ? '--.--%' : vaultAPR}</span>
+                  <span className="text-light-blue font-bold pb-2">ESTIMATED AUTO-COMPOUND APY</span>
+                  <span className="text-light-blue text-6xl font-bold mb-[26px]">
+                    {(vaultApy > 0) ? fPercent(vaultApy) : <span title="APR will show when migration period ends after first week.">🌈✨%</span>}</span>
                   <div className="border-t-2 border-soft-blue my-4 py-6 flex flex-col space-y-2">
                     <span className="font-semibold pb-4 text-lg">MY DEPOSITS</span>
                     <div className="flex justify-between">
@@ -170,9 +174,9 @@ export default function Home() {
                     <span className="font-semibold pb-4 pt-6 text-lg border-t-2 border-soft-blue">TOTAL DEPOSITS</span>
                     <div className="flex justify-between">
                       <span className="font-thin opacity-70	">yCRV Deposited</span>
-                      <span className="font-bold">{data.strategy.balance
+                      <span className="font-bold">{data.strategy.totalAssets
                         ? bmath.div(data.strategy.totalAssets, 10n**18n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                        : '0.00'
+                        : '-'
                       }
                       </span>
                     </div>
@@ -211,9 +215,9 @@ function TabContent(props: { leftActive: any; account: any }) {
         {tab === 'claim' && "Stake yCRV"}
         {tab === 'get' && "Stake yCRV"}
         {tab === 'learn_more_stake' && "Stake yCRV"}
-        {tab === 'deposit' && "Auto-compound yCRV"}
-        {tab === 'withdraw' && "Auto-compound yCRV"}
-        {tab === 'learn_more_deposit' && "Auto-compound yCRV"}
+        {tab === 'deposit' && "Auto-Compound yCRV"}
+        {tab === 'withdraw' && "Auto-Compound yCRV"}
+        {tab === 'learn_more_deposit' && "Auto-Compound yCRV"}
         
       </h1>
       {props.leftActive ? (
@@ -226,7 +230,7 @@ function TabContent(props: { leftActive: any; account: any }) {
             { text: 'Learn More', link: '/app/learn_more_stake' }
           ]}
           launchApp={false}
-          selected={tab === 'get' ? 'Get yPRISMA' : tab === 'stake' ? 'Stake' : tab === 'learn_more_stake' ? 'Learn More' : tab === 'unstake' ? 'Unstake' : tab === 'claim' ? 'Claim Rewards' : ''}
+          selected={tab === 'get' ? 'Get yCRV' : tab === 'stake' ? 'Stake' : tab === 'learn_more_stake' ? 'Learn More' : tab === 'unstake' ? 'Unstake' : tab === 'claim' ? 'Claim Rewards' : ''}
           className="pl-4 mb-2 md:mb-0 md:pl-8"
           onClickLaunch={() => {}}
         />
@@ -253,7 +257,7 @@ function TabContent(props: { leftActive: any; account: any }) {
             <div className="flex flex-col space-y-6 w-full md:w-1/2 p-4 md:p-8 pt-0">
               <span className="font-semibold">STAKE yCRV - EARN STABLES</span>
               <span className="font-thin opacity-70">
-                {`Stake your yCRV and start earning a share of Yearn's veCRV stablecoin revenue today. You'll reach max boost and hit the maximum staking APR after just 4 weeks.`}
+                {`Stake your yCRV and start earning a share of Yearn's vePRISMA stablecoin revenue today. You'll reach max boost and hit the maximum staking APR after just 4 weeks.`}
               </span>
               <Image alt="charge multiplier" className="" src="/charge.png" width={370} height={136} />
             </div>
@@ -279,7 +283,7 @@ function TabContent(props: { leftActive: any; account: any }) {
             <div className="flex flex-col space-y-4 p-4 md:p-8 w-full md:w-1/2">
             <span className="font-semibold">YOUR REWARD</span>
             <span className="font-semibold text-5xl">{fUSD(data.rewards.claimableUsd)}</span>
-            <span className="font-thin opacity-70">{bmath.div(data.rewards.claimable, 10n**18n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} yvcrvUSD</span>
+            <span className="font-thin opacity-70">{bmath.div(data.rewards.claimable, 10n ** BigInt(data.rewards.decimals)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} yvcrvUSD</span>
             <div>
               <ClaimAll />
             </div>
@@ -287,25 +291,35 @@ function TabContent(props: { leftActive: any; account: any }) {
             <div className="flex flex-col space-y-4 w-full md:w-1/2 p-4 md:p-8 pt-0">
               <span className="font-semibold">DESCRIPTION</span>
               <p className="font-thin opacity-70">
-                {`Claim your crvUSD rewards. We've already deposited your crvUSD into our auto-compounding crvUSD vault (`}<Link className="underline" href="https://etherscan.io/token/0x04aebe2e4301cdf5e9c57b01ebdfe4ac4b48dd13">yvcrvUSD</Link>{`).`}
+                {`Claim your crvUSD rewards. We already deposited your crvUSD into our auto-compounding crvUSD vault (`}
+                  <A target="_blank" rel="noreferrer" className="underline" href={`https://yearn.fi/v3/1/${env.YVMKUSD}`}>yvcrvUSD</A>
+                {`).`}
               </p>
               <p className="font-thin opacity-70">
                 {`That means your yield has been earning you additional yield from the moment we received it. Once claimed, your crvUSD vault holdings will appear below.`}
               </p>
+              <div>
+                <div className="font-thin opacity-70">Your yvcrvUSD balance</div>
+                <A className="flex items-center gap-2 font-mono" href={`https://yearn.fi/v3/1/${env.YVMKUSD}`} target="_blank" rel="noreferrer">
+                  <PiVaultLight />
+                  <Tokens amount={data.rewards.vaultBalance} decimals={data.rewards.decimals} />
+                  ({fUSD(data.rewards.vaultBalanceUsd)})
+                </A>
+              </div>
             </div>
           </div>
         )}
         {tab === 'get' && (
           <div className="flex">
             <div className="flex flex-col p-4 md:p-8 w-full md:w-2/3">
-              <span className="font-thin pb-1 text-md">Mint yCRV from CRV</span>
+              <span className="font-thin pb-1 text-md">Mint yCRV from PRISMA</span>
               <Mint />
               <div className="mt-4 flex flex-col space-y-4">
                 <p className="font-thin opacity-70">
-                {`Convert your CRV to yCRV. To ensure you receive the maximum amount of yCRV, the zapper will either mint new yCRV or swap via the Curve pool.`}
+                {`Convert your PRISMA to yCRV using the yCRV contract. This mints yCRV in a 1:1 ratio. ⚠️ Depending on peg it may be more efficient to use a DEX and swap instead of minting.`}
                 </p>
                 <p className="font-thin opacity-70">
-                <b>⚠️ Important: </b>{`yLocker tokens (such as yCRV) can never be redeemed for the underlying locked tokens (CRV). However, because they are liquid, they can be traded on decentralized exchanges, and bought and sold at the current market rate.`}
+                <b>⚠️ Important: </b>{`yLocker tokens (such as yCRV) can never be redeemed for the underlying locked tokens (PRISMA). However, because they are liquid, they can be traded on decentralized exchanges, and bought and sold at the current market rate.`}
                 </p>
               </div>
             </div>
@@ -330,7 +344,7 @@ function TabContent(props: { leftActive: any; account: any }) {
               <span className="font-thin pb-1 text-md">Deposit</span>
               <Deposit />
               <span className="mt-4 font-thin opacity-70">
-                {`Deposit your yCRV into Yearn's auto-compounding vault and earn start earning the maximum APY immediately. The vault will handle staking, claiming and swapping rewards, and reinvesting your yCRV for you.`}
+                {`Deposit your yCRV into Yearn's auto-compounding vault and start earning the maximum APY immediately. The vault will handle staking, claiming and swapping rewards, and reinvesting your yCRV for you.`}
               </span>
             </div>
           </div>
