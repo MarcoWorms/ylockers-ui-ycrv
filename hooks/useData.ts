@@ -52,7 +52,7 @@ export const DataSchema = z.object({
   strategy: z.object({
     address: zhexstringSchema.default(zeroAddress),
     symbol: z.string().default(''),
-    decimals: z.number().default(0),
+    decimals: z.number({ coerce: true }).default(0),
     balance: z.bigint().default(0n),
     allowances: BalanceSchema.array().default([]),
     totalAssets: z.bigint().default(0n)
@@ -168,7 +168,7 @@ export default function useData() {
   }
 
   if (isError) {
-    if (multicall.data?.some(d => d.error)) console.error(multicall.data?.find(d => d.error)?.error)
+    if (multicall.data?.some(d => d.error)) console.error('multicall', multicall)
     if (pricesError) console.error(pricesError)
     return fallback
   }
