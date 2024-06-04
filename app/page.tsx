@@ -12,7 +12,7 @@ export default function Home() {
   const { data } = useData()
 
   return (
-    <main className="flex flex-col items-center min-h-screen bg-gradient-to-r from-dark-black to-dark-blue text-white">
+    <main className="flex flex-col items-center min-h-screen bg-gradient-to-t from-dark-black to-dark-blue text-white">
       <div className="w-full shadow-lg z-10"></div>
       <Background />
       <Header items={headerItems} selected="Home"/>
@@ -27,7 +27,7 @@ export default function Home() {
             <Link href="/app/stake">
               <Button>Launch App</Button>
             </Link>
-            <h2 className="text-4xl font-bold text-light-blue font-mono">APR {data.utilities && data.utilities.globalAverageApr.toString() !== '0' ? fPercent(bmath.div(data.utilities.globalAverageApr, 10n**18n)) : '--.--%'}</h2>
+            <h2 className="text-4xl font-bold text-light-blue font-mono">APR {data.utilities && data.utilities.globalAverageApr.toString() !== '0' ? fPercent(bmath.div(data.utilities.globalAverageApr, 10n**18n)) : <span title="APR will show when migration period ends after first week.">🌈✨%</span>}</h2>
           </div>
         </div>
       </section>

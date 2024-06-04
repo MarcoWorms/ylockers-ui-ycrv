@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import env from '@/lib/env'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { erc20Abi, zeroAddress } from 'viem'
+import { erc20Abi, parseUnits, zeroAddress } from 'viem'
 import { useAccount, useConfig } from 'wagmi'
 import { readContractsQueryOptions } from 'wagmi/query'
 import { zhexstringSchema } from '@/lib/types'
@@ -9,7 +9,6 @@ import abis from '@/app/abis'
 import usePrices from './usePrices'
 import bmath, { priced } from '@/lib/bmath'
 import { useCallback } from 'react'
-import { totalmem } from 'os'
 
 const padRight = (n: number, length: number) => n === 0 ? n : String(n.toString().padEnd(length, '0'))
 
@@ -45,7 +44,9 @@ export const DataSchema = z.object({
     address: zhexstringSchema.default(zeroAddress),
     decimals: z.number().default(0),
     claimable: z.bigint().default(0n),
-    claimableUsd: z.number().default(0)
+    claimableUsd: z.number().default(0),
+    vaultBalance: z.bigint().default(0n),
+    vaultBalanceUsd: z.number().default(0)
   }).default({}),
 
   strategy: z.object({
@@ -108,22 +109,46 @@ export default function useData() {
       { address: env.YPRISMA_STRATEGY, abi: abis.Strategy, functionName: 'decimals' },
       { address: env.YPRISMA_STRATEGY, abi: abis.Strategy, functionName: 'balanceOf', args: [account.address || zeroAddress] },
 
-      { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES, abi: abis.Utilities, functionName: 'getUserProjectedBoostMultiplier', args: [account.address || zeroAddress] },
-      { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES, abi: abis.Utilities, functionName: 'getGlobalProjectedBoostMultiplier' },
+      { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES, abi: abis.Utilities, functionName: 'getUserActiveBoostMultiplier', args: [account.address || zeroAddress] },
+      { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES, abi: abis.Utilities, functionName: 'getGlobalActiveBoostMultiplier' },
+
       // @ts-ignore
-      { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES, abi: abis.Utilities, functionName: 'getGlobalProjectedApr', args: [bmath.mul(prices?.[env.YVMKUSD] || BigInt(0), 10n**18n).toString(), bmath.mul(prices?.[env.YPRISMA] || BigInt(0), 10n**18n).toString()] },
+      { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES,
+        abi: abis.Utilities, functionName: 'getGlobalActiveApr',
+        args: [
+          parseUnits((prices?.[env.YPRISMA] ?? 0).toString(), 18).toString(),
+          parseUnits((prices?.[env.YVMKUSD] ?? 0).toString(), 18).toString()
+        ]
+      },
+
       // @ts-ignore
-      { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES, abi: abis.Utilities, functionName: 'getGlobalMinMaxProjectedApr', args: [bmath.mul(prices?.[env.YVMKUSD] || BigInt(0), 10n**18n).toString(), bmath.mul(prices?.[env.YPRISMA] || BigInt(0), 10n**18n).toString()] },
+      { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES, 
+        abi: abis.Utilities, functionName: 'getGlobalMinMaxActiveApr', 
+        args: [
+          parseUnits((prices?.[env.YPRISMA] ?? 0).toString(), 18).toString(),
+          parseUnits((prices?.[env.YVMKUSD] ?? 0).toString(), 18).toString()
+        ]
+      },
+
       // @ts-ignore
-      { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES, abi: abis.Utilities, functionName: 'getUserProjectedApr', args: [account.address || zeroAddress, bmath.mul(prices?.[env.YVMKUSD] || BigInt(0), 10n**18n).toString(), bmath.mul(prices?.[env.YPRISMA] || BigInt(0), 10n**18n).toString()] },
+      { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES, 
+        abi: abis.Utilities, functionName: 'getUserActiveApr', 
+        args: [
+          account.address || zeroAddress, 
+          parseUnits((prices?.[env.YPRISMA] ?? 0).toString(), 18).toString(),
+          parseUnits((prices?.[env.YVMKUSD] ?? 0).toString(), 18).toString()
+        ] 
+      },
+
       // { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES, abi: abis.Utilities, functionName: 'getUserAprAt', args: [account.address || zeroAddress, 0, bmath.mul(prices?.[env.YPRISMA], 10n**18n), bmath.mul(prices?.[env.MKUSD], 10n**18n)] },
-      { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES, abi: abis.Utilities, functionName: 'projectedRewardAmount' },
-      { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES, abi: abis.Utilities, functionName: 'getUserProjectedBoostMultiplier', args: [account.address || zeroAddress] },
+      { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES, abi: abis.Utilities, functionName: 'activeRewardAmount' },
+      { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES, abi: abis.Utilities, functionName: 'getUserActiveBoostMultiplier', args: [account.address || zeroAddress] },
       { address: env.YPRISMA_OLD_STAKER, abi: abis.OldStaker, functionName: 'balanceOf', args: [account.address || zeroAddress]  },
       // { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES, abi: abis.Utilities, functionName: 'weeklyRewardAmountAt', args: [0] },
       // { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES, abi: abis.Utilities, functionName: 'getWeek' },
 
       { address: env.YPRISMA_STRATEGY, abi: abis.Strategy, functionName: 'totalAssets' },
+      { address: env.YVMKUSD, abi: erc20Abi, functionName: 'balanceOf', args: [account.address || zeroAddress] },
 
     ], multicallAddress })
   )
@@ -185,6 +210,12 @@ export default function useData() {
       claimable: multicall.data?.[13]?.result,
       claimableUsd: priced(
         multicall.data?.[13]?.result!,
+        multicall.data?.[12]?.result!,
+        prices[env.YVMKUSD]
+      ),
+      vaultBalance: multicall.data?.[26]?.result,
+      vaultBalanceUsd: priced(
+        multicall.data?.[26]?.result!,
         multicall.data?.[12]?.result!,
         prices[env.YVMKUSD]
       )

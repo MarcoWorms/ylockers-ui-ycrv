@@ -23,7 +23,7 @@ export default function Tokens({
     return formatter.format(n)
   })()
 
-  return <span className={`${className}`}>
+  return <span className={`font-mono ${className}`}>
     {formatted}
   </span>
 }

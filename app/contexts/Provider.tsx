@@ -4,6 +4,7 @@ import {
   getDefaultConfig,
   RainbowKitProvider,
 } from '@rainbow-me/rainbowkit';
+import { injectedWallet, frameWallet, metaMaskWallet, walletConnectWallet, rainbowWallet, coinbaseWallet, safeWallet } from '@rainbow-me/rainbowkit/wallets';
 import { WagmiProvider } from 'wagmi';
 import {
   mainnet,
@@ -30,7 +31,19 @@ const config = getDefaultConfig({
   appName: 'yPrisma',
   projectId: '84801a4fb569adb34f184f543b6d1762',
   chains: [newMainnet],
-  // chains: env.DEV ? [localhost] : [mainnet],
+  // chains: [mainnet],
+  wallets: [{
+    groupName: 'Popular',
+    wallets: [
+      injectedWallet,
+      frameWallet,
+      metaMaskWallet,
+      walletConnectWallet,
+      rainbowWallet,
+      coinbaseWallet,
+      safeWallet
+    ]
+  }],
   ssr: true, // If your dApp uses server side rendering (SSR)
 });
 

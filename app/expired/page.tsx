@@ -3,7 +3,7 @@ import Background from "../components/Background";
 
 export default function Home() {
   return (
-    <main className="flex flex-col items-center min-h-screen bg-gradient-to-r from-dark-black to-dark-blue text-white">
+    <main className="flex flex-col items-center min-h-screen bg-gradient-to-t from-dark-black to-dark-blue text-white">
       <div className="w-full shadow-lg z-10"></div>
       <Background />
       <Header items={headerItems} selected="Expired farms"/>
