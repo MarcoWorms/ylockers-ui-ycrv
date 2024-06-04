@@ -438,9 +438,9 @@ const TableComponent = (props: any) => {
         const vaultBalance = contractReads.data[index * 2].result;
         return {
           /* @ts-ignore */
-          balance: Number(formatUnits(vaultBalance, vault.decimals)),
+          balance: vaultBalance ? Number(formatUnits(vaultBalance, vault.decimals)) : 0,
           /* @ts-ignore */
-          usdValue: Number(formatUnits(vaultBalance, vault.decimals)) * vault.tvl.price,
+          usdValue: vaultBalance ? Number(formatUnits(vaultBalance, vault.decimals)) * vault.tvl.price : 0,
         };
       }
       return null;
