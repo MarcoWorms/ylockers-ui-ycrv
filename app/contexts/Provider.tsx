@@ -19,10 +19,10 @@ import env from '@/lib/env';
 const queryClient = new QueryClient();
 
 const newMainnet = Object.assign({}, mainnet, {
-  "id": 420417,
+  "id": 420420,
   "rpcUrls": {
     "default": {
-      "http": ["https://virtual.mainnet.rpc.tenderly.co/7f2b806a-8246-4812-a2d0-a289aac841d9"]
+      "http": ["https://virtual.mainnet.rpc.tenderly.co/f27fc283-2742-40d2-97cc-ffe73e9f5787"]
     }
   }
 })
