@@ -198,7 +198,7 @@ export default function useData() {
 
     staker: {
       address: env.YPRISMA_BOOSTED_STAKER,
-      symbol: 'Staked yPRISMA',
+      symbol: 'Staked yCRV',
       decimals: multicall.data?.[9]?.result,
       balance: multicall.data?.[10]?.result,
       totalSupply: multicall.data?.[11]?.result
