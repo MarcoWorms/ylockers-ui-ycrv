@@ -15,7 +15,7 @@ export default function Deposit({ className }: { className?: string }) {
       address: env.YPRISMA_STRATEGY,
       abi: abis.Strategy,
       functionName: 'deposit',
-      args: (amount: bigint) => [amount, data.account]
+      args: (amount: bigint) => [amount]
     }
   }} />
 }
