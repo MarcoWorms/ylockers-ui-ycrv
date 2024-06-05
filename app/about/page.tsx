@@ -13,7 +13,7 @@ export default function Home() {
           <div className="relative mx-auto mb-0 flex w-full flex-col bg-neutral-0">
             <div className="relative mx-auto mt-6 pb-40">
               <section className="grid-cols-12 gap-0 md:grid md:pt-12">
-                <div className="col-span-12 md:col-span-8 md:mb-0 md:pr-20">
+                <div className="col-span-12 md:col-span-6 md:mb-0 md:pr-20">
                   <div className="mb-10 flex flex-col justify-center">
                     <h1 className="mt-28 md:mt-6 block font-black text-5xl"> 
                       {"Let's get your CRV "} 
