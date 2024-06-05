@@ -380,10 +380,8 @@ function TabContent(props: { leftActive: any; account: any }) {
 
 const TableComponent = (props: any) => {
   const [searchTerm, setSearchTerm] = useState('');
-  
   const [sortColumn, setSortColumn] = useState('estApr');
   const [sortDirection, setSortDirection] = useState('desc');
-
   const [vaultData, setVaultData] = useState([]);
 
   useEffect(() => {
@@ -396,7 +394,7 @@ const TableComponent = (props: any) => {
         console.error('Error fetching vault data:', error);
       }
     };
-  
+
     fetchVaultData();
   }, []);
 
@@ -408,7 +406,7 @@ const TableComponent = (props: any) => {
       setSortDirection('asc');
     }
   };
-  
+
   const filteredVaultData = vaultData.filter((vault:any) =>
     vault.category === "Curve"
     && vault.endorsed
@@ -523,7 +521,7 @@ const TableComponent = (props: any) => {
       || vault.formated_symbol.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [sortedData, searchTerm]);
-  
+
   return (
     <div className="w-full rounded-lg overflow-hidden bg-darker-blue text-white mb-8">
       <div className="flex flex-col md:flex-row items-center justify-between w-full">
@@ -587,11 +585,21 @@ const TableComponent = (props: any) => {
           </thead>
           <tbody>
             {filteredData.map((item:any, index) => {
+              const [imageSrc, setImageSrc] = useState(item.token.icon);
               const holdings = getHoldings(item);
               const available = getAvailable(item);
               return (
                 <tr onClick={() => window.open(`https://yearn.fi/vaults/1/${item.address}`, '_blank')} key={index} className="hover:bg-blue">
-                  <td className="text-sm md:text-base py-2 cursor-pointer px-4 md:pl-8 flex items-center space-x-2"><Image alt={item.name} src={item.token.icon} width="40" height="40" onError={(e) => { e.currentTarget.src = 'https://yearn.fi/_next/image?url=%2Fplaceholder.png&w=32&q=75' }} /><span>{item.name}</span></td>
+                  <td className="text-sm md:text-base py-2 cursor-pointer px-4 md:pl-8 flex items-center space-x-2">
+                    <Image
+                      alt={item.name}
+                      src={imageSrc}
+                      width="40"
+                      height="40"
+                      onError={() => setImageSrc('https://yearn.fi/_next/image?url=%2Fplaceholder.png&w=32&q=75')}
+                    />
+                    <span>{item.name}</span>
+                  </td>
                   <td className="text-base font-mono py-2 cursor-pointer pr-4 md:pr-0">{(item.apr.forwardAPR.netAPR * 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
                   <td className="text-base font-mono py-2 cursor-pointer hidden md:table-cell">{(item.apr.netAPR * 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
                   <td className="text-base font-mono py-2 cursor-pointer hidden md:table-cell">
