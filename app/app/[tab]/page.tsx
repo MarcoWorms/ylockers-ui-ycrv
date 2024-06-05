@@ -411,6 +411,9 @@ const TableComponent = (props: any) => {
   
   const filteredVaultData = vaultData.filter((vault:any) =>
     vault.category === "Curve"
+    && vault.endorsed
+    && !vault.details.isRetired
+    && !vault.details.isHidden
   );
 
   const contractReads = useContractReads({
