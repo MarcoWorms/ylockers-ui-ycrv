@@ -5,8 +5,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'assets.smold.app',
-        port: '',
         pathname: '/api/token/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'yearn.fi',
       },
     ],
   },
