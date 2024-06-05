@@ -383,7 +383,7 @@ const TableComponent = (props: any) => {
   const [sortColumn, setSortColumn] = useState('estApr');
   const [sortDirection, setSortDirection] = useState('desc');
   const [vaultData, setVaultData] = useState([]);
-  const [imageSrcs, setImageSrcs] = useState({});
+  const [imageSrcs, setImageSrcs] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     const fetchVaultData = async () => {
