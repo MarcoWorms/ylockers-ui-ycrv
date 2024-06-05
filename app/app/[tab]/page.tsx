@@ -383,6 +383,7 @@ const TableComponent = (props: any) => {
   const [sortColumn, setSortColumn] = useState('estApr');
   const [sortDirection, setSortDirection] = useState('desc');
   const [vaultData, setVaultData] = useState([]);
+  const [imageSrcs, setImageSrcs] = useState({});
 
   useEffect(() => {
     const fetchVaultData = async () => {
@@ -522,6 +523,13 @@ const TableComponent = (props: any) => {
     );
   }, [sortedData, searchTerm]);
 
+  const handleImageError = (vaultAddress: string) => {
+    setImageSrcs((prev) => ({
+      ...prev,
+      [vaultAddress]: 'https://yearn.fi/_next/image?url=%2Fplaceholder.png&w=32&q=75',
+    }));
+  };
+
   return (
     <div className="w-full rounded-lg overflow-hidden bg-darker-blue text-white mb-8">
       <div className="flex flex-col md:flex-row items-center justify-between w-full">
@@ -585,7 +593,6 @@ const TableComponent = (props: any) => {
           </thead>
           <tbody>
             {filteredData.map((item:any, index) => {
-              const [imageSrc, setImageSrc] = useState(item.token.icon);
               const holdings = getHoldings(item);
               const available = getAvailable(item);
               return (
@@ -593,10 +600,10 @@ const TableComponent = (props: any) => {
                   <td className="text-sm md:text-base py-2 cursor-pointer px-4 md:pl-8 flex items-center space-x-2">
                     <Image
                       alt={item.name}
-                      src={imageSrc}
+                      src={imageSrcs[item.address] || item.token.icon}
                       width="40"
                       height="40"
-                      onError={() => setImageSrc('https://yearn.fi/_next/image?url=%2Fplaceholder.png&w=32&q=75')}
+                      onError={() => handleImageError(item.address)}
                     />
                     <span>{item.name}</span>
                   </td>
