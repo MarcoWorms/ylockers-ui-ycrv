@@ -194,10 +194,10 @@ export default function Home() {
               )}
             </div>
           </div>
-          <div className="mt-8">
-            <TableComponent address={account.address}/>
-          </div>
         </section>
+      </div>
+      <div className="mt-8">
+        <TableComponent address={account.address}/>
       </div>
     </main>
   );
