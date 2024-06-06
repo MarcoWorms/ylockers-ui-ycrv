@@ -55,7 +55,8 @@ export const DataSchema = z.object({
     decimals: z.number({ coerce: true }).default(0),
     balance: z.bigint().default(0n),
     allowances: BalanceSchema.array().default([]),
-    totalAssets: z.bigint().default(0n)
+    totalAssets: z.bigint().default(0n),
+    pricePerShare: z.bigint().default(0n)
   }).default({}),
 
   utilities: z.object({
@@ -149,6 +150,7 @@ export default function useData() {
 
       { address: env.YPRISMA_STRATEGY, abi: abis.Strategy, functionName: 'totalAssets' },
       { address: env.YVMKUSD, abi: erc20Abi, functionName: 'balanceOf', args: [account.address || zeroAddress] },
+      { address: env.YPRISMA_STRATEGY, abi: abis.Strategy, functionName: 'pricePerShare' },
 
     ], multicallAddress })
   )
@@ -227,7 +229,8 @@ export default function useData() {
       decimals: multicall.data?.[15]?.result,
       balance: multicall.data?.[16]?.result,
       allowances: [],
-      totalAssets: multicall.data?.[25]?.result
+      totalAssets: multicall.data?.[25]?.result,
+      pricePerShare: multicall.data?.[27]?.result
     },
 
     utilities: {
