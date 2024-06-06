@@ -66,7 +66,7 @@ export default function Home() {
   }, [data.strategy.balance, data.strategy.decimals, prices]);
 
   return (
-    <main className="flex flex-col items-center min-h-screen bg-gradient-to-t from-dark-black to-dark-blue text-white">
+    <main className="flex flex-col items-center min-h-screen bg-[linear-gradient(350deg,var(--tw-gradient-from),var(--tw-gradient-to))] from-dark-black to-dark-blue text-white">
       <div className="w-full shadow-lg z-10"></div>
       <Background className="opacity-20" />
       <div className="max-w-[1200px] w-full z-10">
