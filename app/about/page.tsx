@@ -66,10 +66,10 @@ export default function Home() {
                       </h3>
                       <div className="mt-2 flex flex-col space-y-2 text-white font-thin">
                         <p>
-                          {`Each week, Yearn claims its share of protocol fees and vote-maximized bribes. These are swapped for yVaA) and deposited directly into the reward distributor contract.`}
+                          {`Each week, Yearn claims its share of protocol fees and vote-maximized bribes. These are swapped for crvUSD and deposited directly into the reward distributor contract.`}
                         </p>
                         <p>
-                          {`Your rewards accrue week over week and are never lost if unclaimed. In fact, they begin earning yyield from the moment we receive them! WhA vault tokens will be received directly to your wallet.`}
+                          {`Your rewards accrue week over week and are never lost if unclaimed. In fact, they begin earning yield from the moment we receive them! Earned vault tokens will be received directly to your wallet.`}
                         </p>
                       </div>
                       <h3 className="text-xl font-bold mt-6">
