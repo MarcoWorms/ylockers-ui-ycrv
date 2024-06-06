@@ -80,7 +80,7 @@ export default function Home() {
                           {`Not interested in staking, weights, and manual claims? Just want more yCRV and the highest APYs? Then our yCRV auto-compounding vault is for you!`}
                         </p>
                         <p>
-                          {`Once a week, the vault claims its boofrom the yCRV staker contract, swaps it for more yCRV, and deposits it back into the staker. On top of that, the vault is whitelisted - allowing it to earn max boost immediately on all reinvested yCRV.`}
+                          {`Once a week, the vault claims from the yCRV staker contract, swaps it for more yCRV, and deposits it back into the staker. On top of that, the vault is whitelisted - allowing it to earn max boost immediately on all reinvested yCRV.`}
                         </p>
                         <p>
                           {`For more information on yCRV and the yLockers ecosystem, read our `}<Link className="underline" href="https://docs.yearn.fi/getting-started/products/ylockers/overview">docs</Link>.
