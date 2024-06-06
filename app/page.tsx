@@ -13,7 +13,7 @@ export default function Home() {
   const { data } = useData()
 
   return (
-    <main className="flex flex-col items-center min-h-screen bg-gradient-to-t from-dark-black to-dark-blue text-white">
+    <main className="flex flex-col items-center min-h-screen bg-[linear-gradient(350deg,var(--tw-gradient-from),var(--tw-gradient-to))] from-dark-black to-dark-blue text-white">
       <div className="w-full shadow-lg z-10"></div>
       <Background />
       <Header items={headerItems} selected="Home"/>
