@@ -5,7 +5,7 @@ import {
   RainbowKitProvider,
 } from '@rainbow-me/rainbowkit';
 import { injectedWallet, frameWallet, metaMaskWallet, walletConnectWallet, rainbowWallet, coinbaseWallet, safeWallet } from '@rainbow-me/rainbowkit/wallets';
-import { WagmiProvider } from 'wagmi';
+import { http, WagmiProvider } from 'wagmi';
 import {
   mainnet,
   localhost
@@ -32,6 +32,9 @@ const config = getDefaultConfig({
   projectId: '84801a4fb569adb34f184f543b6d1762',
   // chains: [newMainnet],
   chains: [mainnet],
+  transports: {
+    [mainnet.id]: http(process.env.NEXT_PUBLIC_RPC_1)
+  },
   wallets: [{
     groupName: 'Popular',
     wallets: [
