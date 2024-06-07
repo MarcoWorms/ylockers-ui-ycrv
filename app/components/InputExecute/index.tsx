@@ -107,6 +107,7 @@ function Provided({ className, noInput=false }: { className?: string, noInput?: 
   }, [needsApproval, isApproved, isError, approve, execute, task, verbPastTense, amountExecuted, token])
 
   const theme = useMemo(() => {
+    if (typeof window === 'undefined') return 'default'
     if (!account.isConnected) return 'transparent'
     if (approve.receipt.isLoading) return 'onit'
     if (execute.receipt.isLoading) return 'onit'
