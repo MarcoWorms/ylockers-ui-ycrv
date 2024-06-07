@@ -585,11 +585,11 @@ const TableComponent = (props: any) => {
             </tr>
           </thead>
           <tbody>
-            {filteredData.map((item:any, index) => {
+            {filteredData.map((item: any) => {
               const holdings = getHoldings(item);
               const available = getAvailable(item);
               return (
-                <tr onClick={() => window.open(`https://yearn.fi/vaults/1/${item.address}`, '_blank')} key={index} className="hover:bg-blue">
+                <tr onClick={() => window.open(`https://yearn.fi/vaults/1/${item.address}`, '_blank')} key={item.address} className="hover:bg-blue">
                   <td className="text-sm md:text-base py-2 cursor-pointer px-4 md:pl-8 flex items-center space-x-2">
                     <ImageOrFallback
                       alt={item.name}
@@ -631,7 +631,7 @@ const TableComponent = (props: any) => {
                     )}
                   </td>
                 </tr>
-              )
+              );
             })}
           </tbody>
         </table>
