@@ -34,7 +34,7 @@ import Background from "../../components/Background";
 import A from "@/app/components/A";
 import ImageOrFallback from "@/app/components/ImageOrFallback";
 
-function isVersionGte(version, compareVersion) {
+function isVersionGte(version: string, compareVersion: string) {
     const versionParts = version.split('.').map(Number);
     const compareVersionParts = compareVersion.split('.').map(Number);
     for (let i = 0; i < Math.max(versionParts.length, compareVersionParts.length); i++) {
