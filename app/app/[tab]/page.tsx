@@ -599,8 +599,6 @@ const TableComponent = (props: any) => {
             {filteredData.map((item: any) => {
               const holdings = getHoldings(item);
               const available = getAvailable(item);
-                console.log(item.name)
-                console.log(item.version)
               return (
                 <tr onClick={() => window.open(`https://yearn.fi/${isVersionGte(item.version, "3.0.0") ? "v3/1" : "vaults/1"}/${item.address}`, '_blank')} key={item.address} className="hover:bg-blue">
                   <td className="text-sm md:text-base py-2 cursor-pointer px-4 md:pl-8 flex items-center space-x-2">
