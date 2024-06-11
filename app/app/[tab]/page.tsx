@@ -34,6 +34,17 @@ import Background from "../../components/Background";
 import A from "@/app/components/A";
 import ImageOrFallback from "@/app/components/ImageOrFallback";
 
+function isVersionGte(version: string, compareVersion: string) {
+    const versionParts = version.split('.').map(Number);
+    const compareVersionParts = compareVersion.split('.').map(Number);
+    for (let i = 0; i < Math.max(versionParts.length, compareVersionParts.length); i++) {
+        const v = versionParts[i] || 0;
+        const cv = compareVersionParts[i] || 0;
+        if (v > cv) return true;
+        if (v < cv) return false;
+    }
+    return true; 
+}
 
 function useTab() {
   const params = useParams()
@@ -589,7 +600,7 @@ const TableComponent = (props: any) => {
               const holdings = getHoldings(item);
               const available = getAvailable(item);
               return (
-                <tr onClick={() => window.open(`https://yearn.fi/vaults/1/${item.address}`, '_blank')} key={item.address} className="hover:bg-blue">
+                <tr onClick={() => window.open(`https://yearn.fi/${isVersionGte(item.version, "3.0.0") ? "v3/1" : "vaults/1"}/${item.address}`, '_blank')} key={item.address} className="hover:bg-blue">
                   <td className="text-sm md:text-base py-2 cursor-pointer px-4 md:pl-8 flex items-center space-x-2">
                     <ImageOrFallback
                       alt={item.name}
