@@ -18,7 +18,7 @@ const INPUT_TOKENS = [
   { address: '0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7', symbol: 'cvxCRV' },
   { address: '0xc97232527B62eFb0D8ed38CF3EA103A6CcA4037e', symbol: 'lp-yCRVv1' },
   { address: '0xE9A115b77A1057C918F997c32663FdcE24FB873f', symbol: 'YBS' },
-];
+];'
 
 const OUTPUT_TOKENS = [
   { address: '0xFCc5c47bE19d06BF83eB04298b026F81069ff65b', symbol: 'yCRV' },
@@ -79,7 +79,7 @@ export default function Zap() {
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4">Supercharge your yield with yCRV</h2>
-      <p className="mb-4">Swap any token within the yCRV ecosystem for any other. Maybe you want to swap for a higher yield, or maybe you just like swapping. It's ok, we don't judge.</p>
+      <p className="mb-4">Swap any token within the yCRV ecosystem for any other. Maybe you want to swap for a higher yield, or maybe you just like swapping (it\'s ok, we don\'t judge).</p>
       <form onSubmit={submit} className="space-y-4">
         <div className="flex flex-col space-y-2">
           <label className="font-medium">Swap from</label>
