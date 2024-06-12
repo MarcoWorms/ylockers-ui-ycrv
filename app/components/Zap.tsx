@@ -18,7 +18,7 @@ const INPUT_TOKENS = [
   { address: '0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7', symbol: 'cvxCRV' },
   { address: '0xc97232527B62eFb0D8ed38CF3EA103A6CcA4037e', symbol: 'lp-yCRVv1' },
   { address: '0xE9A115b77A1057C918F997c32663FdcE24FB873f', symbol: 'YBS' },
-];'
+];
 
 const OUTPUT_TOKENS = [
   { address: '0xFCc5c47bE19d06BF83eB04298b026F81069ff65b', symbol: 'yCRV' },
