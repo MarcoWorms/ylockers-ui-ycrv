@@ -14,6 +14,7 @@ import { fAddress, fPercent, fTokens, fUSD } from "@/lib/format";
 import useData from "@/hooks/useData";
 import useVault from "@/hooks/useVault";
 import Tokens from "../../components/Tokens";
+import Zap from "../../components/Zap";
 
 import ClaimAll from "../../components/ClaimAll";
 import Stake from "../../components/Stake";
@@ -325,16 +326,8 @@ function TabContent(props: { leftActive: any; account: any }) {
         {tab === 'get' && (
           <div className="flex">
             <div className="flex flex-col p-4 md:p-8 w-full md:w-2/3">
-              <span className="font-thin pb-1 text-md">Mint yCRV from CRV</span>
-              <Mint />
-              <div className="mt-4 flex flex-col space-y-4">
-                <p className="font-thin opacity-70">
-                {`Convert your CRV to yCRV using the yCRV contract. This mints yCRV in a 1:1 ratio. ⚠️ Depending on peg it may be more efficient to use a DEX and swap instead of minting.`}
-                </p>
-                <p className="font-thin opacity-70">
-                <b>⚠️ Important: </b>{`yLocker tokens (such as yCRV) can never be redeemed for the underlying locked tokens (CRV). However, because they are liquid, they can be traded on decentralized exchanges, and bought and sold at the current market rate.`}
-                </p>
-              </div>
+              <span className="font-thin pb-1 text-md">Zap into yCRV</span>
+              <Zap />
             </div>
           </div>
         )}
