@@ -77,7 +77,7 @@ export default function Zap() {
   }, [inputToken, outputToken]);
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div>
       <h2 className="text-xl font-semibold mb-4">Supercharge your yield with yCRV</h2>
       <p className="mb-4">{`Swap any token within the yCRV ecosystem for any other. Maybe you want to swap for a higher yield, or maybe you just like swapping (it's ok, we don't judge).`}</p>
       <form onSubmit={submit} className="space-y-4">
