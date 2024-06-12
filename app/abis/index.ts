@@ -4,6 +4,7 @@ import yPrisma from './yPrisma'
 import Strategy from './Strategy'
 import Utilities from './Utilities'
 import OldStaker from './OldStaker'
+import Zap from './Zap'
 
 const abis = {
   SingleTokenRewardDistributor,
@@ -12,6 +13,7 @@ const abis = {
   Strategy,
   Utilities,
   OldStaker,
+  Zap,
 }
 
 export default abis
