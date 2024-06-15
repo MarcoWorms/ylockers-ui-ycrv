@@ -61,6 +61,7 @@ export const DataSchema = z.object({
 
   utilities: z.object({
     globalAverageApr: z.bigint({ coerce: true }).default(0n),
+    globalProjectedApr: z.bigint({ coerce: true }).default(0n),
     globalAverageBoostMultiplier: z.bigint({ coerce: true }).default(0n),
     globalMinMaxApr: z.object({
       min: z.bigint({ coerce: true }).default(0n),
@@ -152,6 +153,15 @@ export default function useData() {
       { address: env.YVMKUSD, abi: erc20Abi, functionName: 'balanceOf', args: [account.address || zeroAddress] },
       { address: env.YPRISMA_STRATEGY, abi: abis.Strategy, functionName: 'pricePerShare' },
 
+      // @ts-ignore
+      { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES,
+        abi: abis.Utilities, functionName: 'getGlobalProjectedApr',
+        args: [
+          parseUnits((prices?.[env.YPRISMA] ?? 0).toString(), 18).toString(),
+          parseUnits((prices?.[env.YVMKUSD] ?? 0).toString(), 18).toString()
+        ]
+      },
+
     ], multicallAddress })
   )
 
@@ -235,6 +245,7 @@ export default function useData() {
 
     utilities: {
       globalAverageApr: multicall.data?.[19]?.result,
+      globalProjectedApr: multicall.data?.[28]?.result,
       globalAverageBoostMultiplier: multicall.data?.[18]?.result,
       globalMinMaxApr: {
         min: (multicall.data?.[20]?.result as any[])[0],

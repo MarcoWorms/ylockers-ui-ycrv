@@ -104,8 +104,9 @@ export default function Home() {
             <div className="lg:w-[408px] bg-blue flex flex-col p-10 lg:rounded-br-lg lg:rounded-tr-lg">
               {leftActive ? (
                 <>
-                  <span className="text-light-blue font-bold pb-2">AVERAGE STAKING APR</span>
+                  <span className="text-light-white font-bold pb-2">ACTIVE APR</span>
                   <span className="text-light-blue text-6xl font-bold mb-[26px]">{data.utilities && data.utilities.globalAverageApr.toString() !== '0' ? fPercent(bmath.div(data.utilities.globalAverageApr, 10n**18n)) : <span title="APR will show when migration period ends after first week.">🌈✨%</span>}</span>
+                  <span className="font-normal text-light-blue">Projected APR: {data.utilities && data.utilities.globalProjectedApr.toString() !== '0' ? fPercent(bmath.div(data.utilities.globalProjectedApr, 10n**18n)) : <span title="APR will show when migration period ends after first week.">🌈✨%</span>}</span>
                   <div className="border-t-2 border-b-2 border-soft-blue my-4 py-6 flex flex-col space-y-2">
                     <div className="flex justify-between items-center pb-4">
                       <span className="font-semibold text-lg">YOUR POSITION</span>
