@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+'use client'
+
+import { useState, useEffect, useMemo } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useContractRead } from 'wagmi';
 import { parseUnits } from 'viem';
 import { useDebounce } from 'use-debounce';
-import usePrices from '@/hooks/usePrices';
 import env from '@/lib/env';
 import abis from '@/app/abis';
+import Image from 'next/image';
 
 const INPUT_TOKENS = [
   { address: '0xc5bDdf9843308380375a611c18B50Fb9341f502A', symbol: 'yveCRV-DAO' },
@@ -34,7 +36,6 @@ export default function Zap() {
   const [amount, setAmount] = useState('');
   const [debouncedAmount] = useDebounce(amount, 500);
   const [minOut, setMinOut] = useState('0');
-  const { data: prices } = usePrices([env.YPRISMA]);
 
   const { data: expectedOut } = useContractRead(
     debouncedAmount && inputToken && outputToken
@@ -76,6 +77,12 @@ export default function Zap() {
     }
   }, [inputToken, outputToken]);
 
+  useEffect(() => {
+    if (inputToken === '0xc97232527B62eFb0D8ed38CF3EA103A6CcA4037e') {
+      setOutputToken('0x6E9455D109202b426169F0d8f01A3332DAE160f3');
+    }
+  }, [inputToken]);
+
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Supercharge your yield with yCRV</h2>
@@ -90,6 +97,7 @@ export default function Zap() {
           >
             {INPUT_TOKENS.map((token) => (
               <option key={token.address} value={token.address}>
+                <Image src={`https://github.com/SmolDapp/tokenAssets/blob/main/tokens/1/${token.address}/logo.svg`} alt={token.symbol} width={20} height={20} />
                 {token.symbol}
               </option>
             ))}
@@ -112,6 +120,7 @@ export default function Zap() {
           >
             {OUTPUT_TOKENS.map((token) => (
               <option key={token.address} value={token.address}>
+                <Image src={`https://github.com/SmolDapp/tokenAssets/blob/main/tokens/1/${token.address}/logo.svg`} alt={token.symbol} width={20} height={20} />
                 {token.symbol}
               </option>
             ))}
