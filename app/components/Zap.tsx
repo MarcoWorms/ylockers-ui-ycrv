@@ -130,7 +130,7 @@ export default function Zap() {
         <div className="flex flex-col space-y-2">
           <label className="font-medium">Swap from</label>
           <select
-            className="p-2 border rounded"
+            className="p-2 border rounded text-blue"
             value={inputToken}
             onChange={(e) => setInputToken(e.target.value)}
           >
@@ -142,7 +142,7 @@ export default function Zap() {
             ))}
           </select>
           <input
-            className="p-2 border rounded"
+            className="p-2 border rounded text-blue"
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
@@ -153,7 +153,7 @@ export default function Zap() {
         <div className="flex flex-col space-y-2">
           <label className="font-medium">Swap to</label>
           <select
-            className="p-2 border rounded"
+            className="p-2 border rounded text-blue"
             value={outputToken}
             onChange={(e) => setOutputToken(e.target.value)}
           >
@@ -165,7 +165,7 @@ export default function Zap() {
             ))}
           </select>
           <input
-            className="p-2 border rounded"
+            className="p-2 border rounded text-blue"
             type="number"
             value={minOut}
             readOnly
@@ -173,7 +173,7 @@ export default function Zap() {
           />
         </div>
         <button
-          className="mt-4 w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+          className="mt-4 w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-gray-400 border-1 border-white"
           type="submit"
           disabled={isPending}
         >
