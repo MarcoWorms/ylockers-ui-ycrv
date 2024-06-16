@@ -36,6 +36,8 @@ export default function Zap() {
   const [amount, setAmount] = useState('');
   const [debouncedAmount] = useDebounce(amount, 500);
   const [minOut, setMinOut] = useState('0');
+  const [needsApproval, setNeedsApproval] = useState(false);
+  const [isApproved, setIsApproved] = useState(false);
 
   const { data: expectedOut } = useContractRead(
     debouncedAmount && inputToken && outputToken
@@ -61,14 +63,62 @@ export default function Zap() {
     hash,
   });
 
+  const { data: approvalStatus } = useContractRead(
+    inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f'
+      ? {
+          address: inputToken,
+          abi: abis.YearnBoostedStaker,
+          functionName: 'approvedCaller',
+          args: [address, '0x5271058928d31b6204fc95eee15fe9fbbdca681a'],
+        }
+      : {
+          address: inputToken,
+          abi: abis.ERC20,
+          functionName: 'allowance',
+          args: [address, '0x5271058928d31b6204fc95eee15fe9fbbdca681a'],
+        }
+  );
+
+  useEffect(() => {
+    if (inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
+      setIsApproved(approvalStatus === 3);
+    } else {
+      setIsApproved(Number(approvalStatus) >= parseUnits(debouncedAmount, 18));
+    }
+  }, [approvalStatus, inputToken, debouncedAmount]);
+
+  const { writeContract: approveContract } = useWriteContract();
+
+  const handleApprove = () => {
+    if (inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
+      approveContract({
+        address: inputToken,
+        abi: abis.YearnBoostedStaker,
+        functionName: 'setApprovedCaller',
+        args: ['0x5271058928d31b6204fc95eee15fe9fbbdca681a', 3],
+      });
+    } else {
+      approveContract({
+        address: inputToken,
+        abi: abis.ERC20,
+        functionName: 'approve',
+        args: ['0x5271058928d31b6204fc95eee15fe9fbbdca681a', parseUnits(debouncedAmount, 18)],
+      });
+    }
+  };
+
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    writeContract({
-      address: '0x5271058928d31b6204fc95eee15fe9fbbdca681a', 
-      abi: abis.Zap, 
-      functionName: 'zap',
-      args: [inputToken, outputToken, parseUnits(debouncedAmount, 18), parseUnits(minOut, 18)],
-    });
+    if (!isApproved) {
+      handleApprove();
+    } else {
+      writeContract({
+        address: '0x5271058928d31b6204fc95eee15fe9fbbdca681a', 
+        abi: abis.Zap, 
+        functionName: 'zap',
+        args: [inputToken, outputToken, parseUnits(debouncedAmount, 18), parseUnits(minOut, 18)],
+      });
+    }
   }
 
   useEffect(() => {
@@ -138,7 +188,7 @@ export default function Zap() {
           type="submit"
           disabled={isPending}
         >
-          {isPending ? 'Confirming...' : 'Swap'}
+          {isPending ? 'Confirming...' : isApproved ? 'Swap' : 'Approve'}
         </button>
         {hash && <div>Transaction Hash: {hash}</div>}
         {isConfirming && <div>Waiting for confirmation...</div>}
