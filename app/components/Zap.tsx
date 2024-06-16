@@ -18,7 +18,6 @@ const INPUT_TOKENS = [
   { address: '0x453D92C7d4263201C69aACfaf589Ed14202d83a4', symbol: 'yCRV-f v1' },
   { address: '0x99f5aCc8EC2Da2BC0771c32814EFF52b712de1E5', symbol: 'yCRV-f v2' },
   { address: '0xD533a949740bb3306d119CC777fa900bA034cd52', symbol: 'CRV' },
-  { address: '0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7', symbol: 'cvxCRV' },
   { address: '0xc97232527B62eFb0D8ed38CF3EA103A6CcA4037e', symbol: 'lp-yCRVv1' },
   { address: '0xE9A115b77A1057C918F997c32663FdcE24FB873f', symbol: 'YBS' },
 ];
