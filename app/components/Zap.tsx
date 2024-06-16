@@ -7,6 +7,8 @@ import { useDebounce } from 'use-debounce';
 import env from '@/lib/env';
 import abis from '@/app/abis';
 import Image from 'next/image';
+import { erc20Abi } from 'viem';
+
 
 const INPUT_TOKENS = [
   { address: '0xc5bDdf9843308380375a611c18B50Fb9341f502A', symbol: 'yveCRV-DAO' },
@@ -66,14 +68,14 @@ export default function Zap() {
   const { data: approvalStatus } = useContractRead(
     inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f'
       ? {
-          address: inputToken,
+          address: inputToken as `0x${string}`,
           abi: abis.YearnBoostedStaker,
           functionName: 'approvedCaller',
           args: [address, '0x5271058928d31b6204fc95eee15fe9fbbdca681a'],
         }
       : {
-          address: inputToken,
-          abi: abis.ERC20,
+          address: inputToken as `0x${string}`,
+          abi: erc20Abi,
           functionName: 'allowance',
           args: [address, '0x5271058928d31b6204fc95eee15fe9fbbdca681a'],
         }
@@ -99,8 +101,8 @@ export default function Zap() {
       });
     } else {
       approveContract({
-        address: inputToken,
-        abi: abis.ERC20,
+        address: inputToken as `0x${string}`,
+        abi: erc20Abi,
         functionName: 'approve',
         args: ['0x5271058928d31b6204fc95eee15fe9fbbdca681a', parseUnits(debouncedAmount, 18)],
       });
