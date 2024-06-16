@@ -9,7 +9,6 @@ import abis from '@/app/abis';
 import Image from 'next/image';
 import { erc20Abi } from 'viem';
 
-
 const INPUT_TOKENS = [
   { address: '0xc5bDdf9843308380375a611c18B50Fb9341f502A', symbol: 'yveCRV-DAO' },
   { address: '0x9d409a0A012CFbA9B15F6D4B36Ac57A46966Ab9a', symbol: 'yvBOOST' },
@@ -41,16 +40,12 @@ export default function Zap() {
   const [needsApproval, setNeedsApproval] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
 
-  const { data: expectedOut } = useContractRead(
-    debouncedAmount && inputToken && outputToken
-      ? {
-          address: '0x5271058928d31b6204fc95eee15fe9fbbdca681a', 
-          abi: abis.Zap, 
-          functionName: 'calc_expected_out',
-          args: [inputToken, outputToken, parseUnits(debouncedAmount, 18)],
-        }
-      : {}
-  );
+  const { data: expectedOut } = useContractRead((!!debouncedAmount && !!inputToken && !!outputToken) ? {
+    address: '0x5271058928d31b6204fc95eee15fe9fbbdca681a',
+    abi: abis.Zap,
+    functionName: 'calc_expected_out',
+    args: [inputToken, outputToken, parseUnits(debouncedAmount, 18)],
+  } : {});
 
   useEffect(() => {
     if (expectedOut) {
@@ -65,21 +60,14 @@ export default function Zap() {
     hash,
   });
 
-  const { data: approvalStatus } = useContractRead(
-    inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f'
-      ? {
-          address: inputToken as `0x${string}`,
-          abi: abis.YearnBoostedStaker,
-          functionName: 'approvedCaller',
-          args: [address, '0x5271058928d31b6204fc95eee15fe9fbbdca681a'],
-        }
-      : {
-          address: inputToken as `0x${string}`,
-          abi: erc20Abi,
-          functionName: 'allowance',
-          args: [address, '0x5271058928d31b6204fc95eee15fe9fbbdca681a'],
-        }
-  );
+  const { data: approvalStatus } = useContractRead(address ? {
+    address: inputToken as `0x${string}`,
+    abi: inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f' ? abis.YearnBoostedStaker : erc20Abi,
+    functionName: inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f' ? 'approvedCaller' : 'allowance',
+    args: inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f'
+      ? [address, '0x5271058928d31b6204fc95eee15fe9fbbdca681a']
+      : [address, '0x5271058928d31b6204fc95eee15fe9fbbdca681a'],
+  } : {});
 
   useEffect(() => {
     if (inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
@@ -115,8 +103,8 @@ export default function Zap() {
       handleApprove();
     } else {
       writeContract({
-        address: '0x5271058928d31b6204fc95eee15fe9fbbdca681a', 
-        abi: abis.Zap, 
+        address: '0x5271058928d31b6204fc95eee15fe9fbbdca681a',
+        abi: abis.Zap,
         functionName: 'zap',
         args: [inputToken, outputToken, parseUnits(debouncedAmount, 18), parseUnits(minOut, 18)],
       });
