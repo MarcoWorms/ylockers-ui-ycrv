@@ -33,7 +33,7 @@ const config = getDefaultConfig({
   chains: [newMainnet],
   // chains: [mainnet],
   transports: {
-    [mainnet.id]: http(process.env.NEXT_PUBLIC_RPC_1)
+    [420420]: http(process.env.NEXT_PUBLIC_RPC_1)
   },
   wallets: [{
     groupName: 'Popular',
