@@ -63,7 +63,7 @@ export default function Zap() {
     functionName: inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f' ? 'approvedCaller' : 'allowance',
     args: inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f'
       ? [address, '0x5271058928d31b6204fc95eee15fe9fbbdca681a']
-      : [address, '0x5271058928d31b6204fc95eee15fe9fbbdca681a'],
+      : [address, inputToken],
   } : {});
 
   useEffect(() => {
