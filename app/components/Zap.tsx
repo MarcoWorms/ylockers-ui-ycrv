@@ -6,6 +6,7 @@ import env from '@/lib/env';
 import abis from '@/app/abis';
 import Image from 'next/image';
 import { erc20Abi } from 'viem';
+import bmath from '@/lib/bmath'
 
 const INPUT_TOKENS = [
   { address: '0xc5bDdf9843308380375a611c18B50Fb9341f502A', symbol: 'yveCRV-DAO' },
@@ -33,7 +34,7 @@ export default function Zap() {
   const [outputToken, setOutputToken] = useState(OUTPUT_TOKENS[0].address);
   const [amount, setAmount] = useState('');
   const [debouncedAmount] = useDebounce(amount, 500);
-  const [minOut, setMinOut] = useState('0');
+  const [minOut, setMinOut] = useState(0n);
   const [isApproved, setIsApproved] = useState(false);
   const [balances, setBalances] = useState({});
 
@@ -47,7 +48,7 @@ export default function Zap() {
   useEffect(() => {
     if (expectedOut) {
       const allowableSlippage = 0.01;
-      setMinOut((Number(expectedOut) * (1 - allowableSlippage)).toString());
+      setMinOut(bmath.mul((1 - allowableSlippage), expectedOut));
     }
   }, [expectedOut]);
 
@@ -103,7 +104,7 @@ export default function Zap() {
         address: '0x5271058928d31b6204fc95eee15fe9fbbdca681a',
         abi: abis.Zap,
         functionName: 'zap',
-        args: [inputToken, outputToken, parseUnits(debouncedAmount, 18), parseUnits(minOut, 18)],
+        args: [inputToken, outputToken, parseUnits(debouncedAmount, 18), minOut],
       });
     }
   }
@@ -120,24 +121,24 @@ export default function Zap() {
     }
   }, [inputToken]);
 
-  useEffect(() => {
-    const fetchBalances = async () => {
-      const balances = await Promise.all(INPUT_TOKENS.map(async (token) => {
-        const { data: balance } = await useContractRead({
-          address: token.address as `0x${string}`,
-          abi: erc20Abi,
-          functionName: 'balanceOf',
-          args: [address as `0x${string}`],
-        });
-        return { address: token.address, balance: balance ? formatUnits(balance, 18) : '0' };
-      }));
-      setBalances(balances.reduce((acc, { address, balance }) => ({ ...acc, [address]: balance }), {}));
-    };
+  // useEffect(() => {
+  //   const fetchBalances = async () => {
+  //     const balances = await Promise.all(INPUT_TOKENS.map(async (token) => {
+  //       const { data: balance } = await useContractRead({
+  //         address: token.address as `0x${string}`,
+  //         abi: erc20Abi,
+  //         functionName: 'balanceOf',
+  //         args: [address as `0x${string}`],
+  //       });
+  //       return { address: token.address, balance: balance ? formatUnits(balance, 18) : '0' };
+  //     }));
+  //     setBalances(balances.reduce((acc, { address, balance }) => ({ ...acc, [address]: balance }), {}));
+  //   };
 
-    if (address) {
-      fetchBalances();
-    }
-  }, [address]);
+  //   if (address) {
+  //     fetchBalances();
+  //   }
+  // }, [address]);
 
   return (
     <div>
@@ -185,7 +186,7 @@ export default function Zap() {
           <input
             className="p-2 border rounded text-blue"
             type="number"
-            value={minOut}
+            value={Number(formatUnits(minOut, 18)).toFixed(2)}
             readOnly
             placeholder="You will receive minimum"
           />

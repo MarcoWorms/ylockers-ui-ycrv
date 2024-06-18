@@ -19,7 +19,7 @@ import env from '@/lib/env';
 const queryClient = new QueryClient();
 
 const newMainnet = Object.assign({}, mainnet, {
-  "id": 420420,
+  "id": 6969,
   "rpcUrls": {
     "default": {
       "http": ["https://virtual.mainnet.rpc.tenderly.co/3f8e22ef-19cc-41f2-8afa-0785f74fbcfe"]
@@ -33,7 +33,7 @@ const config = getDefaultConfig({
   chains: [newMainnet],
   // chains: [mainnet],
   transports: {
-    [420420]: http(process.env.NEXT_PUBLIC_RPC_1)
+    [6969]: http(process.env.NEXT_PUBLIC_RPC_1)
   },
   wallets: [{
     groupName: 'Popular',
