@@ -1,8 +1,6 @@
-'use client'
-
 import { useState, useEffect, useMemo } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useContractRead } from 'wagmi';
-import { parseUnits } from 'viem';
+import { parseUnits, formatUnits } from 'viem';
 import { useDebounce } from 'use-debounce';
 import env from '@/lib/env';
 import abis from '@/app/abis';
@@ -36,8 +34,8 @@ export default function Zap() {
   const [amount, setAmount] = useState('');
   const [debouncedAmount] = useDebounce(amount, 500);
   const [minOut, setMinOut] = useState('0');
-  const [needsApproval, setNeedsApproval] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
+  const [balances, setBalances] = useState({});
 
   const { data: expectedOut } = useContractRead((!!debouncedAmount && !!inputToken && !!outputToken) ? {
     address: '0x5271058928d31b6204fc95eee15fe9fbbdca681a',
@@ -122,6 +120,25 @@ export default function Zap() {
     }
   }, [inputToken]);
 
+  useEffect(() => {
+    const fetchBalances = async () => {
+      const balances = await Promise.all(INPUT_TOKENS.map(async (token) => {
+        const { data: balance } = await useContractRead({
+          address: token.address as `0x${string}`,
+          abi: erc20Abi,
+          functionName: 'balanceOf',
+          args: [address as `0x${string}`],
+        });
+        return { address: token.address, balance: balance ? formatUnits(balance, 18) : '0' };
+      }));
+      setBalances(balances.reduce((acc, { address, balance }) => ({ ...acc, [address]: balance }), {}));
+    };
+
+    if (address) {
+      fetchBalances();
+    }
+  }, [address]);
+
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Supercharge your yield with yCRV</h2>
@@ -134,10 +151,11 @@ export default function Zap() {
             value={inputToken}
             onChange={(e) => setInputToken(e.target.value)}
           >
-            {INPUT_TOKENS.map((token) => (
+            {INPUT_TOKENS.map((token: any) => (
               <option key={token.address} value={token.address}>
                 <Image src={`https://github.com/SmolDapp/tokenAssets/blob/main/tokens/1/${token.address}/logo.svg`} alt={token.symbol} width={20} height={20} />
-                {token.symbol}
+                {/* @ts-ignore */}
+                {token.symbol} ({balances[token.address] ? Number(balances[token.address]).toFixed(2) : '0.00'})
               </option>
             ))}
           </select>
