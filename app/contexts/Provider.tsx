@@ -22,7 +22,7 @@ const newMainnet = Object.assign({}, mainnet, {
   "id": 420420,
   "rpcUrls": {
     "default": {
-      "http": ["https://virtual.mainnet.rpc.tenderly.co/f27fc283-2742-40d2-97cc-ffe73e9f5787"]
+      "http": ["https://virtual.mainnet.rpc.tenderly.co/3f8e22ef-19cc-41f2-8afa-0785f74fbcfe"]
     }
   }
 })
