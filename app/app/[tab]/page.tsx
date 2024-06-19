@@ -325,8 +325,7 @@ function TabContent(props: { leftActive: any; account: any }) {
         )}
         {tab === 'get' && (
           <div className="flex">
-            <div className="flex flex-col p-4 md:p-8 w-full md:w-2/3">
-              <span className="font-thin pb-1 text-md">Zap into yCRV</span>
+            <div className="flex flex-col p-4 md:p-8 w-full md:w-full">
               <Zap />
             </div>
           </div>
