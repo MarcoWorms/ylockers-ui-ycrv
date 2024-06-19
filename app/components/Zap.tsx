@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useContractRead } from 'wagmi';
 import { parseUnits, formatUnits } from 'viem';
 import { useDebounce } from 'use-debounce';
@@ -6,7 +6,7 @@ import env from '@/lib/env';
 import abis from '@/app/abis';
 import Image from 'next/image';
 import { erc20Abi } from 'viem';
-import bmath from '@/lib/bmath'
+import bmath from '@/lib/bmath';
 
 const INPUT_TOKENS = [
   { address: '0xc5bDdf9843308380375a611c18B50Fb9341f502A', symbol: 'yveCRV-DAO' },
@@ -27,6 +27,50 @@ const OUTPUT_TOKENS = [
   { address: '0x6E9455D109202b426169F0d8f01A3332DAE160f3', symbol: 'lp-yCRVv2' },
   { address: '0xE9A115b77A1057C918F997c32663FdcE24FB873f', symbol: 'YBS' },
 ];
+
+function useSwapForErc20(inputToken, debouncedAmount, address) {
+  const { data: approvalStatus } = useContractRead(address ? {
+    address: inputToken as `0x${string}`,
+    abi: erc20Abi,
+    functionName: 'allowance',
+    args: [address, '0x5271058928d31b6204fc95eee15fe9fbbdca681a'],
+  } : {});
+
+  const { writeContract: approveContract } = useWriteContract();
+
+  const handleApprove = () => {
+    approveContract({
+      address: inputToken as `0x${string}`,
+      abi: erc20Abi,
+      functionName: 'approve',
+      args: ['0x5271058928d31b6204fc95eee15fe9fbbdca681a', parseUnits(debouncedAmount, 18)],
+    });
+  };
+
+  return { approvalStatus, handleApprove };
+}
+
+function useSwapForYBS(inputToken, address) {
+  const { data: approvalStatus } = useContractRead(address ? {
+    address: inputToken as `0x${string}`,
+    abi: abis.YearnBoostedStaker,
+    functionName: 'approvedCaller',
+    args: [address, '0x5271058928d31b6204fc95eee15fe9fbbdca681a'],
+  } : {});
+
+  const { writeContract: approveContract } = useWriteContract();
+
+  const handleApprove = () => {
+    approveContract({
+      address: inputToken,
+      abi: abis.YearnBoostedStaker,
+      functionName: 'setApprovedCaller',
+      args: ['0x5271058928d31b6204fc95eee15fe9fbbdca681a', 3],
+    });
+  };
+
+  return { approvalStatus, handleApprove };
+}
 
 export default function Zap() {
   const { address } = useAccount();
@@ -58,44 +102,26 @@ export default function Zap() {
     hash,
   });
 
-  const { data: approvalStatus } = useContractRead(address ? {
-    address: inputToken as `0x${string}`,
-    abi: inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f' ? abis.YearnBoostedStaker : erc20Abi,
-    functionName: inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f' ? 'approvedCaller' : 'allowance',
-    args: inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f'
-      ? [address, '0x5271058928d31b6204fc95eee15fe9fbbdca681a']
-      : [address, inputToken],
-  } : {});
+  const swapErc20 = useSwapForErc20(inputToken, debouncedAmount, address);
+  const swapYBS = useSwapForYBS(inputToken, address);
 
   useEffect(() => {
     if (inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
-      setIsApproved(approvalStatus === 3);
+      setIsApproved(swapYBS.approvalStatus === 3);
     } else {
-      setIsApproved(Number(approvalStatus) >= parseUnits(debouncedAmount, 18));
+      setIsApproved(Number(swapErc20.approvalStatus) >= parseUnits(debouncedAmount, 18));
     }
-  }, [approvalStatus, inputToken, debouncedAmount]);
+  }, [swapErc20.approvalStatus, swapYBS.approvalStatus, inputToken, debouncedAmount]);
 
-  const { writeContract: approveContract } = useWriteContract();
-
-  const handleApprove = () => {
+  const handleApprove = useCallback(() => {
     if (inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
-      approveContract({
-        address: inputToken,
-        abi: abis.YearnBoostedStaker,
-        functionName: 'setApprovedCaller',
-        args: ['0x5271058928d31b6204fc95eee15fe9fbbdca681a', 3],
-      });
+      swapYBS.handleApprove();
     } else {
-      approveContract({
-        address: inputToken as `0x${string}`,
-        abi: erc20Abi,
-        functionName: 'approve',
-        args: ['0x5271058928d31b6204fc95eee15fe9fbbdca681a', parseUnits(debouncedAmount, 18)],
-      });
+      swapErc20.handleApprove();
     }
-  };
+  }, [inputToken, swapErc20, swapYBS]);
 
-  async function submit(e: React.FormEvent<HTMLFormElement>) {
+  async function submit(e) {
     e.preventDefault();
     if (!isApproved) {
       handleApprove();
@@ -120,25 +146,6 @@ export default function Zap() {
       setOutputToken('0x6E9455D109202b426169F0d8f01A3332DAE160f3');
     }
   }, [inputToken]);
-
-  // useEffect(() => {
-  //   const fetchBalances = async () => {
-  //     const balances = await Promise.all(INPUT_TOKENS.map(async (token) => {
-  //       const { data: balance } = await useContractRead({
-  //         address: token.address as `0x${string}`,
-  //         abi: erc20Abi,
-  //         functionName: 'balanceOf',
-  //         args: [address as `0x${string}`],
-  //       });
-  //       return { address: token.address, balance: balance ? formatUnits(balance, 18) : '0' };
-  //     }));
-  //     setBalances(balances.reduce((acc, { address, balance }) => ({ ...acc, [address]: balance }), {}));
-  //   };
-
-  //   if (address) {
-  //     fetchBalances();
-  //   }
-  // }, [address]);
 
   return (
     <div>
