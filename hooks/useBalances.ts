@@ -36,10 +36,12 @@ export default function useBalances() {
   }));
 
   const multicall = useSuspenseQuery(
+    /* @ts-ignore */
     readContractsQueryOptions(config, { contracts, multicallAddress })
   );
 
   const balances = multicall.data?.reduce((acc, result, index) => {
+    /* @ts-ignore */
     acc[contracts[index].address] = result.result;
     return acc;
   }, {});

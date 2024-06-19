@@ -7,7 +7,20 @@ import abis from '@/app/abis';
 import Image from 'next/image';
 import { erc20Abi } from 'viem';
 import bmath from '@/lib/bmath';
-import useBalances from '@/hooks/useBalances';
+import useBalances from '../../hooks/useBalances';
+
+const INPUT_TOKENS = [
+  { address: '0xc5bDdf9843308380375a611c18B50Fb9341f502A', symbol: 'yveCRV-DAO' },
+  { address: '0x9d409a0A012CFbA9B15F6D4B36Ac57A46966Ab9a', symbol: 'yvBOOST' },
+  { address: '0xFCc5c47bE19d06BF83eB04298b026F81069ff65b', symbol: 'yCRV' },
+  { address: '0x27B5739e22ad9033bcBf192059122d163b60349D', symbol: 'yvyCRV' },
+  { address: '0x6E9455D109202b426169F0d8f01A3332DAE160f3', symbol: 'lp-yCRVv2' },
+  { address: '0x453D92C7d4263201C69aACfaf589Ed14202d83a4', symbol: 'yCRV-f v1' },
+  { address: '0x99f5aCc8EC2Da2BC0771c32814EFF52b712de1E5', symbol: 'yCRV-f v2' },
+  { address: '0xD533a949740bb3306d119CC777fa900bA034cd52', symbol: 'CRV' },
+  { address: '0xc97232527B62eFb0D8ed38CF3EA103A6CcA4037e', symbol: 'lp-yCRVv1' },
+  { address: '0xE9A115b77A1057C918F997c32663FdcE24FB873f', symbol: 'YBS' },
+];
 
 const OUTPUT_TOKENS = [
   { address: '0xFCc5c47bE19d06BF83eB04298b026F81069ff65b', symbol: 'yCRV' },
@@ -16,7 +29,7 @@ const OUTPUT_TOKENS = [
   { address: '0xE9A115b77A1057C918F997c32663FdcE24FB873f', symbol: 'YBS' },
 ];
 
-function useSwapForErc20(inputToken, debouncedAmount, address) {
+function useSwapForErc20(inputToken: `0x${string}`, debouncedAmount: string, address: `0x${string}`) {
   const { data: approvalStatus, refetch: refetchApprovalStatus } = useContractRead(address ? {
     address: inputToken as `0x${string}`,
     abi: erc20Abi,
@@ -38,7 +51,7 @@ function useSwapForErc20(inputToken, debouncedAmount, address) {
   return { approvalStatus, handleApprove, approvalHash, refetchApprovalStatus };
 }
 
-function useSwapForYBS(inputToken, address) {
+function useSwapForYBS(inputToken: `0x${string}`, address: `0x${string}`) {
   const { data: approvalStatus, refetch: refetchApprovalStatus } = useContractRead(address ? {
     address: inputToken as `0x${string}`,
     abi: abis.YearnBoostedStaker,
@@ -81,7 +94,7 @@ export default function Zap() {
   useEffect(() => {
     if (expectedOut) {
       const allowableSlippage = 0.01;
-      setMinOut(bmath.mul((1 - allowableSlippage), expectedOut));
+      setMinOut(bmath.mul((1 - allowableSlippage), expectedOut as bigint));
     }
   }, [expectedOut]);
 
@@ -91,8 +104,8 @@ export default function Zap() {
     hash,
   });
 
-  const swapErc20 = useSwapForErc20(inputToken, debouncedAmount, address);
-  const swapYBS = useSwapForYBS(inputToken, address);
+  const swapErc20 = useSwapForErc20(inputToken as `0x${string}`, debouncedAmount, address as `0x${string}`);
+  const swapYBS = useSwapForYBS(inputToken as `0x${string}`, address as `0x${string}`);
 
   const { isLoading: isApprovalPending, isSuccess: isApprovalConfirmed } = useWaitForTransactionReceipt({
     hash: inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f' ? swapYBS.approvalHash : swapErc20.approvalHash,
@@ -124,7 +137,7 @@ export default function Zap() {
     }
   }, [inputToken, swapErc20, swapYBS]);
 
-  async function submit(e) {
+  async function submit(e: any) {
     e.preventDefault();
     if (!isApproved) {
       handleApprove();
@@ -157,7 +170,9 @@ export default function Zap() {
   }, [isConfirmed, refetchBalances]);
 
   useEffect(() => {
+    /* @ts-ignore */
     if (balances[inputToken]) {
+      /* @ts-ignore */
       setAmount(formatUnits(balances[inputToken], 18));
     }
   }, [inputToken, balances]);
@@ -178,6 +193,7 @@ export default function Zap() {
               {INPUT_TOKENS.map((token: any) => (
                 <option key={token.address} value={token.address}>
                   <Image src={`https://github.com/SmolDapp/tokenAssets/blob/main/tokens/1/${token.address}/logo.svg`} alt={token.symbol} width={20} height={20} />
+                  {/* @ts-ignore */}
                   {token.symbol} ({balances[token.address] ? Number(formatUnits(balances[token.address], 18)).toFixed(2) : '0.00'})
                 </option>
               ))}
@@ -202,6 +218,7 @@ export default function Zap() {
             >
               {OUTPUT_TOKENS.map((token) => (
                 <option key={token.address} value={token.address}>
+                  {/* @ts-ignore */}
                   {token.symbol} ({balances[token.address] ? Number(formatUnits(balances[token.address], 18)).toFixed(2) : '0.00'})
                 </option>
               ))}
