@@ -73,7 +73,8 @@ export const DataSchema = z.object({
     // weeklyRewardAmountAt: z.bigint({ coerce: true }).default(0n),
     // week: z.bigint({ coerce: true }).default(0n)
     userBoostMultiplier: z.bigint({ coerce: true }).default(0n),
-    oldStakerBalance: z.bigint({ coerce: true }).default(0n)
+    oldStakerBalance: z.bigint({ coerce: true }).default(0n),
+    vaultAPR: z.bigint({ coerce: true }).default(0n)
   }).default({})
 })
 
@@ -162,6 +163,11 @@ export default function useData() {
         ]
       },
 
+      { address: env.YPRISMA_BOOSTED_STAKER_UTILITIES, abi: abis.Utilities, functionName: 'getUserActiveAprWithFee', args: [
+        "0xBdF157c3bad2164Ce6F9dc607fd115374010c5dC",
+        parseUnits((prices?.[env.YPRISMA] ?? 0).toString(), 18).toString(),
+        parseUnits((prices?.[env.YVMKUSD] ?? 0).toString(), 18).toString()
+      ] },
     ], multicallAddress })
   )
 
@@ -257,7 +263,8 @@ export default function useData() {
       userBoostMultiplier: multicall.data?.[23]?.result,
       oldStakerBalance: multicall.data?.[24]?.result,
       // weeklyRewardAmountAt: multicall.data?.[23]?.result,
-      // week: multicall.data?.[24]?.result
+      // week: multicall.data?.[24]?.result,
+      vaultAPR: multicall.data?.[29]?.result
     },
   })}
 }
