@@ -33,7 +33,7 @@ const config = getDefaultConfig({
   chains: [newMainnet],
   // chains: [mainnet],
   transports: {
-    [6969]: http(process.env.NEXT_PUBLIC_RPC_1)
+    [6969]: http("https://virtual.mainnet.rpc.tenderly.co/3f8e22ef-19cc-41f2-8afa-0785f74fbcfe")
   },
   wallets: [{
     groupName: 'Popular',
