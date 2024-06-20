@@ -137,8 +137,7 @@ export default function Zap() {
     }
   }, [inputToken, swapErc20, swapYBS]);
 
-  async function submit(e: any) {
-    e.preventDefault();
+  async function handleClick() {
     if (!isApproved) {
       handleApprove();
     } else {
@@ -181,7 +180,7 @@ export default function Zap() {
     <div>
       <h2 className="text-xl font-semibold mb-4">Supercharge your yield with yCRV</h2>
       <p className="mb-8">{`Swap any token within the yCRV ecosystem for any other. Maybe you want to swap for a higher yield, or maybe you just like swapping (it's ok, we don't judge).`}</p>
-      <form onSubmit={submit} className="space-y-4">
+      <div className="space-y-4">
         <div className="flex flex-col space-y-2">
           <label className="font-medium text-center">Swap from</label>
           <div className='flex w-full space-x-4'>
@@ -234,7 +233,7 @@ export default function Zap() {
         </div>
         <button
           className="mt-4 w-full bg-lighter-blue text-white p-2 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 border-1 border-white"
-          type="submit"
+          onClick={handleClick}
           disabled={isPending || isApprovalPending || inputToken === outputToken || !inputToken || !outputToken || !debouncedAmount}
         >
           {isPending ? 'Confirming...' : isApproved ? 'Swap' : 'Approve'}
@@ -243,7 +242,7 @@ export default function Zap() {
         {isConfirming && <div>Waiting for confirmation...</div>}
         {isConfirmed && <div>Transaction confirmed.</div>}
         {error && <div>Error: {error.message}</div>}
-      </form>
+      </div>
     </div>
   );
 }
