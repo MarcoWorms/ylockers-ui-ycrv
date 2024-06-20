@@ -170,11 +170,11 @@ export default function Zap() {
 
   useEffect(() => {
     /* @ts-ignore */
-    if (balances[inputToken]) {
+    if (balances[inputToken] && !amount) {
       /* @ts-ignore */
       setAmount(formatUnits(balances[inputToken], 18));
     }
-  }, [balances]);
+  }, [inputToken, balances]);
 
   return (
     <div>
