@@ -174,7 +174,7 @@ export default function Zap() {
       /* @ts-ignore */
       setAmount(formatUnits(balances[inputToken], 18));
     }
-  }, [inputToken, balances]);
+  }, [balances]);
 
   return (
     <div>
