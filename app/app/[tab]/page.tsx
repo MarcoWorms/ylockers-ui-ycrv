@@ -57,7 +57,7 @@ export default function Home() {
   const { data } = useData()
 
   const { data: yprismaVault } = useVault(env.YPRISMA_STRATEGY)
-  const vaultApr: number = z.number({ coerce: true }).parse(yprismaVault?.apr?.forwardAPR.netAPR ?? 0)
+  const vaultApr: number = z.number({ coerce: true }).parse(yprismaVault?.apr?.netAPR ?? 0)
   const vaultApy: number = (1 + (vaultApr / 52)) ** 52 - 1;
 
   const tab = useTab();
