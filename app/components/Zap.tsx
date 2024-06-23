@@ -1,11 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useContractRead } from 'wagmi';
-import { parseUnits, formatUnits } from 'viem';
+import { parseUnits, formatUnits, erc20Abi } from 'viem';
 import { useDebounce } from 'use-debounce';
 import env from '@/lib/env';
 import abis from '@/app/abis';
 import Image from 'next/image';
-import { erc20Abi } from 'viem';
 import bmath from '@/lib/bmath';
 import useBalances from '../../hooks/useBalances';
 
@@ -215,16 +214,16 @@ export default function Zap() {
   }, [isConfirmed, refetchBalances]);
 
   useEffect(() => {
-    /* @ts-ignore */
-    if (balances[inputToken] && !amount) {
-      /* @ts-ignore */
+    if (balances[inputToken]) {
       setAmount(formatUnits(balances[inputToken], 18));
+    } else {
+      setAmount('');
     }
   }, [inputToken, balances]);
 
   const filteredInputTokens = INPUT_TOKENS.filter(token => {
-    /* @ts-ignore */
-    return balances[token.address] && Number(formatUnits(balances[token.address], 18)) > 0;
+    const balance = balances[token.address];
+    return balance && balance > parseUnits('1', 18);
   });
 
   return (
