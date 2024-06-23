@@ -214,7 +214,9 @@ export default function Zap() {
   }, [isConfirmed, refetchBalances]);
 
   useEffect(() => {
+    // @ts-ignore
     if (balances[inputToken]) {
+      // @ts-ignore
       setAmount(formatUnits(balances[inputToken], 18));
     } else {
       setAmount('');
@@ -222,6 +224,7 @@ export default function Zap() {
   }, [inputToken, balances]);
 
   const filteredInputTokens = INPUT_TOKENS.filter(token => {
+    // @ts-ignore
     const balance = balances[token.address];
     return balance && balance > parseUnits('1', 18);
   });
