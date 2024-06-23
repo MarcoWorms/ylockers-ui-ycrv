@@ -74,6 +74,28 @@ function useSwapForYBS(inputToken: `0x${string}`, address: `0x${string}`) {
   return { approvalStatus, handleApprove, approvalHash, refetchApprovalStatus };
 }
 
+function useSwapForYBSOutput(outputToken: `0x${string}`, address: `0x${string}`) {
+  const { data: approvalStatus, refetch: refetchApprovalStatus } = useContractRead(address ? {
+    address: outputToken as `0x${string}`,
+    abi: abis.YearnBoostedStaker,
+    functionName: 'approvedCaller',
+    args: [address, '0x5271058928d31b6204fc95eee15fe9fbbdca681a'],
+  } : {});
+
+  const { writeContract: approveContract, data: approvalHash } = useWriteContract();
+
+  const handleApprove = () => {
+    approveContract({
+      address: outputToken,
+      abi: abis.YearnBoostedStaker,
+      functionName: 'setApprovedCaller',
+      args: ['0x5271058928d31b6204fc95eee15fe9fbbdca681a', 3],
+    });
+  };
+
+  return { approvalStatus, handleApprove, approvalHash, refetchApprovalStatus };
+}
+
 export default function Zap() {
   const { address, isConnected } = useAccount();
   const [inputToken, setInputToken] = useState(INPUT_TOKENS[0].address);
@@ -83,6 +105,8 @@ export default function Zap() {
   const [minOut, setMinOut] = useState(0n);
   const [isApproved, setIsApproved] = useState(false);
   const [isYBSApproved, setIsYBSApproved] = useState(false);
+  const [needsInputApproval, setNeedsInputApproval] = useState(false);
+  const [needsOutputApproval, setNeedsOutputApproval] = useState(false);
 
   const { balances, refetch: refetchBalances, isLoading: balancesLoading, isError: balancesError } = useBalances();
 
@@ -107,64 +131,68 @@ export default function Zap() {
   });
 
   const swapErc20 = useSwapForErc20(inputToken as `0x${string}`, address as `0x${string}`);
-  const swapYBS = useSwapForYBS(inputToken as `0x${string}`, address as `0x${string}`);
+  const swapYBSInput = useSwapForYBS(inputToken as `0x${string}`, address as `0x${string}`);
+  const swapYBSOutput = useSwapForYBSOutput(outputToken as `0x${string}`, address as `0x${string}`);
 
   const { isLoading: isApprovalPending, isSuccess: isApprovalConfirmed } = useWaitForTransactionReceipt({
-    hash: inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f' ? swapYBS.approvalHash : swapErc20.approvalHash,
+    hash: inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f' ? swapYBSInput.approvalHash :
+          outputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f' ? swapYBSOutput.approvalHash :
+          swapErc20.approvalHash,
   });
 
   useEffect(() => {
     if (isApprovalConfirmed) {
       if (inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
-        swapYBS.refetchApprovalStatus();
+        swapYBSInput.refetchApprovalStatus();
+      } else if (outputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
+        swapYBSOutput.refetchApprovalStatus();
       } else {
         swapErc20.refetchApprovalStatus();
       }
     }
-  }, [isApprovalConfirmed, inputToken, swapErc20, swapYBS]);
+  }, [isApprovalConfirmed, inputToken, outputToken, swapErc20, swapYBSInput, swapYBSOutput]);
 
   useEffect(() => {
     if (inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
-      setIsApproved(swapYBS.approvalStatus === 3);
+      setIsApproved(swapYBSInput.approvalStatus === 3);
     } else {
       setIsApproved(Number(swapErc20.approvalStatus) > 0);
     }
-  }, [swapErc20.approvalStatus, swapYBS.approvalStatus, inputToken]);
+    setNeedsInputApproval(!isApproved);
+  }, [swapErc20.approvalStatus, swapYBSInput.approvalStatus, inputToken, isApproved]);
 
   useEffect(() => {
     if (outputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
-      setIsYBSApproved(swapYBS.approvalStatus === 3);
+      setIsYBSApproved(swapYBSOutput.approvalStatus === 3);
+      setNeedsOutputApproval(!isYBSApproved);
+    } else {
+      setNeedsOutputApproval(false);
     }
-  }, [swapYBS.approvalStatus, outputToken]);
+  }, [swapYBSOutput.approvalStatus, outputToken, isYBSApproved]);
 
   const handleApprove = useCallback(() => {
-    if (inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
-      swapYBS.handleApprove();
-    } else {
-      swapErc20.handleApprove();
+    if (needsInputApproval) {
+      if (inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
+        swapYBSInput.handleApprove();
+      } else {
+        swapErc20.handleApprove();
+      }
+    } else if (needsOutputApproval) {
+      swapYBSOutput.handleApprove();
     }
-  }, [inputToken, swapErc20, swapYBS]);
-
-  const handleYBSApprove = useCallback(() => {
-    swapYBS.handleApprove();
-  }, [swapYBS]);
+  }, [inputToken, outputToken, swapErc20, swapYBSInput, swapYBSOutput, needsInputApproval, needsOutputApproval]);
 
   async function handleClick() {
     if (!isConnected) {
-      // Trigger wallet connection
-      // This depends on your wallet connection setup
-      // For example: connectWallet();
-    } else if (!isApproved) {
+      // Trigger wallet connection here
+    } else if (needsInputApproval || needsOutputApproval) {
       handleApprove();
-    } else if (outputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f' && !isYBSApproved) {
-      handleYBSApprove();
     } else {
       writeContract({
         address: '0x5271058928d31b6204fc95eee15fe9fbbdca681a',
         abi: abis.Zap,
         functionName: 'zap',
-        args: [inputToken, outputToken, parseUnits(debouncedAmount, 18), minOut],
-      });
+        args: [inputToken, outputToken, parseUnits(debouncedAmount, 18), minOut],      });
     }
   }
 
@@ -259,7 +287,11 @@ export default function Zap() {
           onClick={handleClick}
           disabled={isPending || isApprovalPending || inputToken === outputToken || !inputToken || !outputToken || !debouncedAmount}
         >
-          {!isConnected ? 'Connect Wallet' : isPending ? 'Confirming...' : isApproved && (outputToken !== '0xE9A115b77A1057C918F997c32663FdcE24FB873f' || isYBSApproved) ? 'Zap' : 'Approve'}
+          {!isConnected ? 'Connect Wallet' : 
+          isPending ? 'Confirming...' : 
+          needsInputApproval ? 'Approve Input' : 
+          needsOutputApproval ? 'Approve YBS Output' : 
+          'Zap'}
         </button>
         {hash && <div>Transaction Hash: {hash}</div>}
         {isConfirming && <div>Waiting for confirmation...</div>}
