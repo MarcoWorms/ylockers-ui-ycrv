@@ -257,6 +257,7 @@ export default function Zap() {
   }, [justApproved, swapErc20, swapYBSInput, swapYBSOutput]);
 
   useEffect(() => {
+    {/*  @ts-ignore */}
     if (balances[inputToken] && Number(formatUnits(balances[inputToken], 18)) >= 1) {
       if (!userInputAmount) {
         setAmount('0');
@@ -271,6 +272,7 @@ export default function Zap() {
 
   const handleAmountChange = (e: any) => {
     const newAmount = e.target.value;
+    // @ts-ignore
     if (balances[inputToken] && Number(formatUnits(balances[inputToken], 18)) >= 1) {
       setUserInputAmount(newAmount);
       setAmount(newAmount);
@@ -278,6 +280,7 @@ export default function Zap() {
   };
 
   const filteredInputTokens = INPUT_TOKENS.filter(token => {
+    // @ts-ignore
     const balance = balances[token.address];
     return balance !== undefined && Number(formatUnits(balance, 18)) >= 1;
   });
@@ -314,6 +317,7 @@ export default function Zap() {
             {filteredInputTokens.map((token: any) => (
               <option key={token.address} value={token.address}>
                 {/* <Image src={`https://github.com/SmolDapp/tokenAssets/blob/main/tokens/1/${token.address}/logo.svg`} alt={token.symbol} width={20} height={20} /> */}
+                {/*  @ts-ignore */}
                 {token.symbol} ({Number(formatUnits(balances[token.address], 18)).toFixed(2)})
               </option>
             ))}
