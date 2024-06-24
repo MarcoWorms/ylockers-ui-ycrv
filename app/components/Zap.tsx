@@ -106,6 +106,10 @@ export default function Zap() {
   const [isYBSApproved, setIsYBSApproved] = useState(false);
   const [needsInputApproval, setNeedsInputApproval] = useState(false);
   const [needsOutputApproval, setNeedsOutputApproval] = useState(false);
+  const [userInputAmount, setUserInputAmount] = useState('');
+  const [inputApproved, setInputApproved] = useState(false);
+  const [justApproved, setJustApproved] = useState(false);
+
 
   const { balances, refetch: refetchBalances, isLoading: balancesLoading, isError: balancesError } = useBalances();
 
@@ -148,38 +152,62 @@ export default function Zap() {
       } else {
         swapErc20.refetchApprovalStatus();
       }
+      setInputApproved(true);
     }
   }, [isApprovalConfirmed, inputToken, outputToken, swapErc20, swapYBSInput, swapYBSOutput]);
 
   useEffect(() => {
-    if (inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
-      setIsApproved(swapYBSInput.approvalStatus === 3);
-    } else {
-      setIsApproved(Number(swapErc20.approvalStatus) > 0);
-    }
-    setNeedsInputApproval(!isApproved);
-  }, [swapErc20.approvalStatus, swapYBSInput.approvalStatus, inputToken, isApproved]);
+    const updateApprovalStatus = async () => {
+      if (inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
+        setIsApproved(swapYBSInput.approvalStatus === 3);
+      } else {
+        setIsApproved(Number(swapErc20.approvalStatus) > 0);
+      }
+  
+      if (outputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
+        setIsYBSApproved(swapYBSOutput.approvalStatus === 3);
+      } else {
+        setIsYBSApproved(true);
+      }
+  
+      setNeedsInputApproval(!isApproved);
+      setNeedsOutputApproval(outputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f' && !isYBSApproved);
+    };
+  
+    updateApprovalStatus();
+  }, [swapErc20.approvalStatus, swapYBSInput.approvalStatus, swapYBSOutput.approvalStatus, inputToken, outputToken, isApproved, isYBSApproved]);
 
   useEffect(() => {
-    if (outputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
-      setIsYBSApproved(swapYBSOutput.approvalStatus === 3);
-      setNeedsOutputApproval(!isYBSApproved);
-    } else {
-      setNeedsOutputApproval(false);
+    if (!justApproved) {
+      if (inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
+        setIsApproved(swapYBSInput.approvalStatus === 3);
+      } else {
+        setIsApproved(Number(swapErc20.approvalStatus) > 0);
+      }
+  
+      if (outputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
+        setIsYBSApproved(swapYBSOutput.approvalStatus === 3);
+      } else {
+        setIsYBSApproved(true);
+      }
+  
+      setNeedsInputApproval(!isApproved);
+      setNeedsOutputApproval(outputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f' && !isYBSApproved);
     }
-  }, [swapYBSOutput.approvalStatus, outputToken, isYBSApproved]);
-
-  const handleApprove = useCallback(() => {
+  }, [swapErc20.approvalStatus, swapYBSInput.approvalStatus, swapYBSOutput.approvalStatus, inputToken, outputToken, isApproved, isYBSApproved, justApproved]);
+ 
+  const handleApprove = useCallback(async () => {
     if (needsInputApproval) {
       if (inputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
-        swapYBSInput.handleApprove();
+        await swapYBSInput.handleApprove();
       } else {
-        swapErc20.handleApprove();
+        await swapErc20.handleApprove();
       }
     } else if (needsOutputApproval) {
-      swapYBSOutput.handleApprove();
+      await swapYBSOutput.handleApprove();
     }
-  }, [inputToken, outputToken, swapErc20, swapYBSInput, swapYBSOutput, needsInputApproval, needsOutputApproval]);
+    setJustApproved(true);
+  }, [inputToken, swapErc20, swapYBSInput, swapYBSOutput, needsInputApproval, needsOutputApproval]);
 
   async function handleClick() {
     if (!isConnected) {
@@ -210,24 +238,59 @@ export default function Zap() {
   useEffect(() => {
     if (isConfirmed) {
       refetchBalances();
+      swapErc20.refetchApprovalStatus();
+      swapYBSInput.refetchApprovalStatus();
+      swapYBSOutput.refetchApprovalStatus();
     }
-  }, [isConfirmed, refetchBalances]);
+  }, [isConfirmed, refetchBalances, swapErc20, swapYBSInput, swapYBSOutput]);
+
+  useEffect(() => {
+    if (justApproved) {
+      const updateAfterApproval = async () => {
+        await swapErc20.refetchApprovalStatus();
+        await swapYBSInput.refetchApprovalStatus();
+        await swapYBSOutput.refetchApprovalStatus();
+        setTimeout(() => setJustApproved(false), 500);
+      };
+      updateAfterApproval();
+    }
+  }, [justApproved, swapErc20, swapYBSInput, swapYBSOutput]);
 
   useEffect(() => {
     // @ts-ignore
-    if (balances[inputToken]) {
-      // @ts-ignore
-      setAmount(formatUnits(balances[inputToken], 18));
+    if (balances[inputToken] && !userInputAmount) {
+      setAmount('0');
     } else {
-      setAmount('');
+      setAmount(userInputAmount);
     }
-  }, [inputToken, balances]);
+  }, [inputToken, balances, userInputAmount]);
+
+  const handleAmountChange = (e: any) => {
+    setUserInputAmount(e.target.value);
+    setAmount(e.target.value);
+  };
 
   const filteredInputTokens = INPUT_TOKENS.filter(token => {
     // @ts-ignore
     const balance = balances[token.address];
-    return balance && balance > parseUnits('1', 18);
+    return balance !== undefined;
   });
+
+  useEffect(() => {
+    if (isApprovalConfirmed) {
+      swapErc20.refetchApprovalStatus();
+      swapYBSInput.refetchApprovalStatus();
+      swapYBSOutput.refetchApprovalStatus();
+    }
+  }, [isApprovalConfirmed, swapErc20, swapYBSInput, swapYBSOutput]);
+
+  const getButtonText = () => {
+    if (!isConnected) return 'Connect Wallet';
+    if (isPending || isApprovalPending || justApproved) return 'Confirming...';
+    if (needsInputApproval) return 'Approve Input';
+    if (needsOutputApproval) return 'Approve YBS Output';
+    return 'Zap';
+  };
 
   return (
     <div>
@@ -254,7 +317,7 @@ export default function Zap() {
               className="p-2 border rounded text-blue w-full"
               type="number"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={handleAmountChange}
               placeholder="Amount"
             />
           </div>
@@ -287,13 +350,9 @@ export default function Zap() {
         <button
           className="mt-4 w-full bg-lighter-blue text-white p-2 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 border-1 border-white"
           onClick={handleClick}
-          disabled={isPending || isApprovalPending || inputToken === outputToken || !inputToken || !outputToken || !debouncedAmount}
+          disabled={isPending || isApprovalPending || justApproved || inputToken === outputToken || !inputToken || !outputToken || !debouncedAmount}
         >
-          {!isConnected ? 'Connect Wallet' : 
-          isPending ? 'Confirming...' : 
-          needsInputApproval ? 'Approve Input' : 
-          needsOutputApproval ? 'Approve YBS Output' : 
-          'Zap'}
+          {getButtonText()}
         </button>
         {hash && <div>Transaction Hash: {hash}</div>}
         {isConfirming && <div>Waiting for confirmation...</div>}
