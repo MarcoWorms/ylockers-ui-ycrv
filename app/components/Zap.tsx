@@ -257,23 +257,29 @@ export default function Zap() {
   }, [justApproved, swapErc20, swapYBSInput, swapYBSOutput]);
 
   useEffect(() => {
-    // @ts-ignore
-    if (balances[inputToken] && !userInputAmount) {
-      setAmount('0');
+    if (balances[inputToken] && Number(formatUnits(balances[inputToken], 18)) >= 1) {
+      if (!userInputAmount) {
+        setAmount('0');
+      } else {
+        setAmount(userInputAmount);
+      }
     } else {
-      setAmount(userInputAmount);
+      setAmount('');
+      setUserInputAmount('');
     }
   }, [inputToken, balances, userInputAmount]);
 
   const handleAmountChange = (e: any) => {
-    setUserInputAmount(e.target.value);
-    setAmount(e.target.value);
+    const newAmount = e.target.value;
+    if (balances[inputToken] && Number(formatUnits(balances[inputToken], 18)) >= 1) {
+      setUserInputAmount(newAmount);
+      setAmount(newAmount);
+    }
   };
 
   const filteredInputTokens = INPUT_TOKENS.filter(token => {
-    // @ts-ignore
     const balance = balances[token.address];
-    return balance !== undefined;
+    return balance !== undefined && Number(formatUnits(balance, 18)) >= 1;
   });
 
   useEffect(() => {
@@ -300,19 +306,18 @@ export default function Zap() {
         <div className="flex flex-col space-y-2">
           <label className="font-medium text-center">Zap from</label>
           <div className='flex w-full space-x-4'>
-            <select
-              className="p-2 border rounded text-blue w-full"
-              value={inputToken}
-              onChange={(e) => setInputToken(e.target.value)}
-            >
-              {filteredInputTokens.map((token: any) => (
-                <option key={token.address} value={token.address}>
-                  <Image src={`https://github.com/SmolDapp/tokenAssets/blob/main/tokens/1/${token.address}/logo.svg`} alt={token.symbol} width={20} height={20} />
-                  {/* @ts-ignore */}
-                  {token.symbol} ({balances[token.address] ? Number(formatUnits(balances[token.address], 18)).toFixed(2) : '0.00'})
-                </option>
-              ))}
-            </select>
+          <select
+            className="p-2 border rounded text-blue w-full"
+            value={inputToken}
+            onChange={(e) => setInputToken(e.target.value)}
+          >
+            {filteredInputTokens.map((token: any) => (
+              <option key={token.address} value={token.address}>
+                {/* <Image src={`https://github.com/SmolDapp/tokenAssets/blob/main/tokens/1/${token.address}/logo.svg`} alt={token.symbol} width={20} height={20} /> */}
+                {token.symbol} ({Number(formatUnits(balances[token.address], 18)).toFixed(2)})
+              </option>
+            ))}
+          </select>
             <input
               className="p-2 border rounded text-blue w-full"
               type="number"
@@ -324,7 +329,7 @@ export default function Zap() {
         </div>
         <div className="text-center text-2xl">↓</div>
         <div className="flex flex-col space-y-2">
-          <label className="font-medium text-center">Zap to</label>
+          <label className="font-medium text-center">Zap to minimum of:</label>
           <div className='flex w-full space-x-4'>
             <select
               className="p-2 border rounded text-blue w-full"
@@ -357,7 +362,7 @@ export default function Zap() {
         {hash && <div>Transaction Hash: {hash}</div>}
         {isConfirming && <div>Waiting for confirmation...</div>}
         {isConfirmed && <div>Transaction confirmed.</div>}
-        {error && <div>Error: {error.message}</div>}
+        {error && <div>Transaction Error.</div>}
       </div>
     </div>
   );
