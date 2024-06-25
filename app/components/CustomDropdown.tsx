@@ -12,9 +12,10 @@ interface CustomDropdownProps {
   options: DropdownOption[];
   value: string;
   onChange: (value: string) => void;
+  isConnected: boolean;
 }
 
-export default function CustomDropdown({ options, value, onChange }: CustomDropdownProps) {
+export default function CustomDropdown({ options, value, onChange, isConnected }: CustomDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -32,6 +33,7 @@ export default function CustomDropdown({ options, value, onChange }: CustomDropd
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
   const getTokenLogo = (address: string) => {
     if (address?.toLowerCase() === '0xe9a115b77a1057c918f997c32663fdce24fb873f') {
       return ybsLogo;
@@ -52,7 +54,10 @@ export default function CustomDropdown({ options, value, onChange }: CustomDropd
             width={20}
             height={20}
           />
-          <span className="ml-2">{selectedOption?.symbol} ({selectedOption?.balance})</span>
+          <span className="ml-2">
+            {selectedOption?.symbol}
+            {isConnected && selectedOption?.balance && ` (${selectedOption.balance})`}
+          </span>
         </div>
         <span>▼</span>
       </div>
@@ -73,7 +78,10 @@ export default function CustomDropdown({ options, value, onChange }: CustomDropd
                 width={20}
                 height={20}
               />
-              <span className="ml-2">{option.symbol} ({option.balance})</span>
+              <span className="ml-2">
+                {option.symbol}
+                {isConnected && option.balance && ` (${option.balance})`}
+              </span>
             </div>
           ))}
         </div>

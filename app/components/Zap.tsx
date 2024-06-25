@@ -325,6 +325,7 @@ export default function Zap() {
             }))}
             value={inputToken}
             onChange={(value) => setInputToken(value)}
+            isConnected={isConnected}
           />
           <input
             className="p-2 border rounded text-blue w-full"
@@ -348,6 +349,7 @@ export default function Zap() {
             }))}
             value={outputToken}
             onChange={(value) => setOutputToken(value)}
+            isConnected={isConnected}
           />
           <input
             className="p-2 border rounded text-blue w-full"
