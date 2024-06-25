@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt, useContractRead } from 'wagmi';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useContractRead, useConfig } from 'wagmi';
 import { parseUnits, formatUnits, erc20Abi } from 'viem';
 import { useDebounce } from 'use-debounce';
 import env from '@/lib/env';
@@ -8,6 +8,12 @@ import Image from 'next/image';
 import bmath from '@/lib/bmath';
 import useBalances from '../../hooks/useBalances';
 import CustomDropdown  from "./CustomDropdown";
+import Button from './Button';
+import { motion } from 'framer-motion';
+import { TfiReceipt } from 'react-icons/tfi';
+import A from './A';
+import { springs } from '@/lib/motion';
+
 
 
 const INPUT_TOKENS = [
@@ -95,6 +101,17 @@ function useSwapForYBSOutput(outputToken: `0x${string}`, address: `0x${string}`)
   };
 
   return { approvalStatus, handleApprove, approvalHash, refetchApprovalStatus };
+}
+
+function GreatSuccess({ hash, message }: { hash: `0x${string}`, message: string }) {
+  const config = useConfig()
+  return <A href={`${config.getClient().chain.blockExplorers?.default.url}/tx/${hash}`} 
+    target='_blank' rel="noreferrer">
+    <div className="flex items-center gap-2">
+      <TfiReceipt />
+      <div>{message}</div>
+    </div>
+  </A>
 }
 
 export default function Zap() {
@@ -302,75 +319,140 @@ export default function Zap() {
 
   const getButtonText = () => {
     if (!isConnected) return 'Connect Wallet';
-    if (isPending || isApprovalPending || justApproved) return 'Confirming...';
+    if (isPending) return 'Zapping...';
+    if (isApprovalPending) return 'Approving...';
+    if (justApproved) return 'Approved!';
     if (needsInputApproval) return 'Approve Input';
     if (needsOutputApproval) return 'Approve YBS Output';
     return 'Zap';
   };
+
+  const getButtonTheme = () => {
+    if (typeof window === 'undefined') return 'default';
+    if (!isConnected) return 'transparent';
+    if (isPending || isApprovalPending || justApproved) return 'onit';
+    return 'default';
+  };
+
+  const subtext = useMemo(() => {
+    if (error) return {
+      key: 'error',
+      text: <div>🛑 Error! Please contact support</div>
+    };
+    if (isApprovalPending) return {
+      key: 'approve-confirm',
+      text: <div>Confirming approval...</div>
+    };
+    if (justApproved) return {
+      key: 'just-approved',
+      text: <div>Approval successful! You can now zap.</div>
+    };
+    if (isPending) return {
+      key: 'execute-confirm',
+      text: <div>Confirming zap...</div>
+    };
+    if (isConfirmed) return {
+      key: 'success',
+      text: <GreatSuccess hash={hash!} message={`You zapped ${amount} ${INPUT_TOKENS.find(t => t.address === inputToken)?.symbol} to ${Number(formatUnits(minOut, 18)).toFixed(2)} ${OUTPUT_TOKENS.find(t => t.address === outputToken)?.symbol}!`} />
+    };
+    if (needsInputApproval) return {
+      key: 'needs-input-approval',
+      text: <div>Approval needed for input token</div>
+    };
+    if (needsOutputApproval) return {
+      key: 'needs-output-approval',
+      text: <div>Approval needed for YBS output</div>
+    };
+    return {
+      key: 'default',
+      text: <div>{`You have ${balances[inputToken as keyof typeof balances] ? Number(formatUnits(balances[inputToken as keyof typeof balances], 18)).toFixed(2) : '0.00'} ${INPUT_TOKENS.find(t => t.address === inputToken)?.symbol}`}</div>
+    };
+  }, [error, isApprovalPending, justApproved, isPending, isConfirmed, hash, amount, inputToken, outputToken, minOut, balances, needsInputApproval, needsOutputApproval]);
+  
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    if (justApproved) {
+      const timer = setTimeout(() => setJustApproved(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [justApproved]);
 
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Supercharge your yield with yCRV</h2>
       <p className="mb-8">{`Zap any token within the yCRV ecosystem for any other. Maybe you want to zap for a higher yield, or maybe you just like zapping (it's ok, we don't judge).`}</p>
       <div className="space-y-4">
-      <div className="flex flex-col space-y-2">
-        <label className="font-medium text-center">Zap from</label>
-        <div className='flex w-full space-x-4'>
-          <CustomDropdown
-            options={filteredInputTokens.map(token => ({
-              address: token.address,
-              symbol: token.symbol,
-              // @ts-ignore
-              balance: Number(formatUnits(balances[token.address], 18)).toFixed(2)
-            }))}
-            value={inputToken}
-            onChange={(value) => setInputToken(value)}
-            isConnected={isConnected}
-          />
-          <input
-            className="p-2 border rounded text-blue w-full"
-            type="number"
-            value={amount}
-            onChange={handleAmountChange}
-            placeholder="Amount"
-          />
+        <div className="flex flex-col space-y-2">
+          <label className="font-medium text-center">Zap from</label>
+          <div className='flex w-full space-x-4'>
+            <CustomDropdown
+              options={filteredInputTokens.map(token => ({
+                address: token.address,
+                symbol: token.symbol,
+                // @ts-ignore
+                balance: Number(formatUnits(balances[token.address], 18)).toFixed(2)
+              }))}
+              value={inputToken}
+              onChange={(value) => setInputToken(value)}
+              isConnected={isConnected}
+            />
+            <input
+              className="p-2 border rounded text-blue w-full"
+              type="number"
+              value={amount}
+              onChange={handleAmountChange}
+              placeholder="Amount"
+            />
+          </div>
         </div>
-      </div>
-      <div className="text-center text-2xl">↓</div>
-      <div className="flex flex-col space-y-2">
-        <label className="font-medium text-center">Zap to minimum of:</label>
-        <div className='flex w-full space-x-4'>
-          <CustomDropdown
-            options={OUTPUT_TOKENS.filter(token => token.address !== inputToken && (inputToken !== '0x453D92C7d4263201C69aACfaf589Ed14202d83a4' || token.address === '0x99f5aCc8EC2Da2BC0771c32814EFF52b712de1E5')).map(token => ({
-              address: token.address,
-              symbol: token.symbol,
-              // @ts-ignore
-              balance: balances[token.address] ? Number(formatUnits(balances[token.address], 18)).toFixed(2) : '0.00'
-            }))}
-            value={outputToken}
-            onChange={(value) => setOutputToken(value)}
-            isConnected={isConnected}
-          />
-          <input
-            className="p-2 border rounded text-blue w-full"
-            type="number"
-            value={Number(formatUnits(minOut, 18)).toFixed(2)}
-            readOnly
-            placeholder="You will receive a minimum of"
-          /> 
+        <div className="text-center text-2xl">↓</div>
+        <div className="flex flex-col space-y-2">
+          <label className="font-medium text-center">Zap to minimum of:</label>
+          <div className='flex w-full space-x-4'>
+            <CustomDropdown
+              options={OUTPUT_TOKENS.filter(token => token.address !== inputToken && (inputToken !== '0x453D92C7d4263201C69aACfaf589Ed14202d83a4' || token.address === '0x99f5aCc8EC2Da2BC0771c32814EFF52b712de1E5')).map(token => ({
+                address: token.address,
+                symbol: token.symbol,
+                // @ts-ignore
+                balance: balances[token.address] ? Number(formatUnits(balances[token.address], 18)).toFixed(2) : '0.00'
+              }))}
+              value={outputToken}
+              onChange={(value) => setOutputToken(value)}
+              isConnected={isConnected}
+            />
+            <input
+              className="p-2 border rounded text-blue w-full"
+              type="number"
+              value={Number(formatUnits(minOut, 18)).toFixed(2)}
+              readOnly
+              placeholder="You will receive a minimum of"
+            /> 
+          </div>
         </div>
-      </div>
-        <button
-          className="mt-4 w-full bg-lighter-blue text-white p-2 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 border-1 border-white"
-          onClick={handleClick}
-          disabled={isPending || isApprovalPending || justApproved || inputToken === outputToken || !inputToken || !outputToken || !debouncedAmount}
-        >
-          {getButtonText()}
-        </button>
-        {hash && <div>Transaction Hash: {hash}</div>}
-        {isConfirming && <div>Waiting for confirmation...</div>}
-        {isConfirmed && <div>Transaction confirmed.</div>}
-        {error && <div>Transaction Error.</div>}
+        <div className="flex flex-col gap-2 w-full">
+          <div className="flex gap-2 w-full">
+            <Button
+              onClick={handleClick}
+              theme={getButtonTheme()}
+              disabled={isPending || isApprovalPending || inputToken === outputToken || !inputToken || !outputToken || !debouncedAmount}
+              className=" capitalize overflow-hidden !w-full mt-4"
+              style={{ width: '135px', paddingLeft: 0, paddingRight: 0 }}
+            >
+              {getButtonText()}
+            </Button>
+          </div>
+          <div className={`pl-3 font-thin text-xs ${error ? 'text-charge-yellow' : 'opacity-70'}`}>
+            <motion.div key={subtext.key}
+              transition={springs.rollin}
+              initial={mounted ? { x: 40, opacity: 0 } : false}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -40, opacity: 0 }} >
+              {subtext.text}
+            </motion.div>
+          </div>
+        </div>
       </div>
     </div>
   );
