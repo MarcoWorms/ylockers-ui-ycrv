@@ -141,7 +141,13 @@ export default function Home() {
                     </div>
                     <div className="flex justify-between">
                       <span className="font-thin opacity-70	">Rewards this week</span>
-                      <span className="font-bold">{bmath.div(data.utilities.weeklyRewardAmount, 10n**18n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} crvUSD</span>
+                      <span className="font-bold">{
+                        (
+                          bmath.div(data.strategy.pricePerShare, 10n**18n)
+                          *
+                          bmath.div(data.utilities.weeklyRewardAmount, 10n**18n)
+                        )
+                        .toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} crvUSD</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="font-thin opacity-70	flex items-center gap-2 whitespace-nowrap">
