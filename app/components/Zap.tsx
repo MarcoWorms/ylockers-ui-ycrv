@@ -7,6 +7,8 @@ import abis from '@/app/abis';
 import Image from 'next/image';
 import bmath from '@/lib/bmath';
 import useBalances from '../../hooks/useBalances';
+import CustomDropdown  from "./CustomDropdown";
+
 
 const INPUT_TOKENS = [
   { address: '0xc5bDdf9843308380375a611c18B50Fb9341f502A', symbol: 'yveCRV-DAO' },
@@ -280,10 +282,15 @@ export default function Zap() {
   };
 
   const filteredInputTokens = INPUT_TOKENS.filter(token => {
-    // @ts-ignore
-    const balance = balances[token.address];
+    const balance = balances[token.address as keyof typeof balances];
     return balance !== undefined && Number(formatUnits(balance, 18)) >= 1;
   });
+
+  useEffect(() => {
+    if (filteredInputTokens.length > 0 && !filteredInputTokens.some(token => token.address === inputToken)) {
+      setInputToken(filteredInputTokens[0].address);
+    }
+  }, [filteredInputTokens, inputToken]);
 
   useEffect(() => {
     if (isApprovalConfirmed) {
@@ -306,56 +313,51 @@ export default function Zap() {
       <h2 className="text-xl font-semibold mb-4">Supercharge your yield with yCRV</h2>
       <p className="mb-8">{`Zap any token within the yCRV ecosystem for any other. Maybe you want to zap for a higher yield, or maybe you just like zapping (it's ok, we don't judge).`}</p>
       <div className="space-y-4">
-        <div className="flex flex-col space-y-2">
-          <label className="font-medium text-center">Zap from</label>
-          <div className='flex w-full space-x-4'>
-          <select
-            className="p-2 border rounded text-blue w-full"
+      <div className="flex flex-col space-y-2">
+        <label className="font-medium text-center">Zap from</label>
+        <div className='flex w-full space-x-4'>
+          <CustomDropdown
+            options={filteredInputTokens.map(token => ({
+              address: token.address,
+              symbol: token.symbol,
+              // @ts-ignore
+              balance: Number(formatUnits(balances[token.address], 18)).toFixed(2)
+            }))}
             value={inputToken}
-            onChange={(e) => setInputToken(e.target.value)}
-          >
-            {filteredInputTokens.map((token: any) => (
-              <option key={token.address} value={token.address}>
-                {/* <Image src={`https://github.com/SmolDapp/tokenAssets/blob/main/tokens/1/${token.address}/logo.svg`} alt={token.symbol} width={20} height={20} /> */}
-                {/*  @ts-ignore */}
-                {token.symbol} ({Number(formatUnits(balances[token.address], 18)).toFixed(2)})
-              </option>
-            ))}
-          </select>
-            <input
-              className="p-2 border rounded text-blue w-full"
-              type="number"
-              value={amount}
-              onChange={handleAmountChange}
-              placeholder="Amount"
-            />
-          </div>
+            onChange={(value) => setInputToken(value)}
+          />
+          <input
+            className="p-2 border rounded text-blue w-full"
+            type="number"
+            value={amount}
+            onChange={handleAmountChange}
+            placeholder="Amount"
+          />
         </div>
-        <div className="text-center text-2xl">↓</div>
-        <div className="flex flex-col space-y-2">
-          <label className="font-medium text-center">Zap to minimum of:</label>
-          <div className='flex w-full space-x-4'>
-            <select
-              className="p-2 border rounded text-blue w-full"
-              value={outputToken}
-              onChange={(e) => setOutputToken(e.target.value)}
-            >
-              {OUTPUT_TOKENS.filter(token => token.address !== inputToken && (inputToken !== '0x453D92C7d4263201C69aACfaf589Ed14202d83a4' || token.address === '0x99f5aCc8EC2Da2BC0771c32814EFF52b712de1E5')).map((token) => (
-                <option key={token.address} value={token.address}>
-                  {/* @ts-ignore */}
-                  {token.symbol} ({balances[token.address] ? Number(formatUnits(balances[token.address], 18)).toFixed(2) : '0.00'})
-                </option>
-              ))}
-            </select>
-            <input
-              className="p-2 border rounded text-blue w-full"
-              type="number"
-              value={Number(formatUnits(minOut, 18)).toFixed(2)}
-              readOnly
-              placeholder="You will receive a minimum of"
-            /> 
-          </div>
+      </div>
+      <div className="text-center text-2xl">↓</div>
+      <div className="flex flex-col space-y-2">
+        <label className="font-medium text-center">Zap to minimum of:</label>
+        <div className='flex w-full space-x-4'>
+          <CustomDropdown
+            options={OUTPUT_TOKENS.filter(token => token.address !== inputToken && (inputToken !== '0x453D92C7d4263201C69aACfaf589Ed14202d83a4' || token.address === '0x99f5aCc8EC2Da2BC0771c32814EFF52b712de1E5')).map(token => ({
+              address: token.address,
+              symbol: token.symbol,
+              // @ts-ignore
+              balance: balances[token.address] ? Number(formatUnits(balances[token.address], 18)).toFixed(2) : '0.00'
+            }))}
+            value={outputToken}
+            onChange={(value) => setOutputToken(value)}
+          />
+          <input
+            className="p-2 border rounded text-blue w-full"
+            type="number"
+            value={Number(formatUnits(minOut, 18)).toFixed(2)}
+            readOnly
+            placeholder="You will receive a minimum of"
+          /> 
         </div>
+      </div>
         <button
           className="mt-4 w-full bg-lighter-blue text-white p-2 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 border-1 border-white"
           onClick={handleClick}
