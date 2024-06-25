@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import ybsLogo from '@/public/ybs-logo.svg';
 
 interface DropdownOption {
   address: string;
@@ -31,6 +32,12 @@ export default function CustomDropdown({ options, value, onChange }: CustomDropd
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+  const getTokenLogo = (address: string) => {
+    if (address?.toLowerCase() === '0xe9a115b77a1057c918f997c32663fdce24fb873f') {
+      return ybsLogo;
+    }
+    return `https://raw.githubusercontent.com/SmolDapp/tokenAssets/main/tokens/1/${address?.toLowerCase()}/logo.svg`;
+  };
 
   return (
     <div className="relative w-full text-blue bg-white" ref={dropdownRef}>
@@ -40,7 +47,7 @@ export default function CustomDropdown({ options, value, onChange }: CustomDropd
       >
         <div className="flex items-center">
           <Image
-            src={`https://raw.githubusercontent.com/SmolDapp/tokenAssets/main/tokens/1/${selectedOption?.address.toLocaleLowerCase()}/logo.svg`}
+            src={getTokenLogo(selectedOption?.address)}
             alt={selectedOption?.symbol || ''}
             width={20}
             height={20}
@@ -61,7 +68,7 @@ export default function CustomDropdown({ options, value, onChange }: CustomDropd
               }}
             >
               <Image
-                src={`https://raw.githubusercontent.com/SmolDapp/tokenAssets/main/tokens/1/${option.address.toLocaleLowerCase()}/logo.svg`}
+                src={getTokenLogo(option.address)}
                 alt={option.symbol}
                 width={20}
                 height={20}
