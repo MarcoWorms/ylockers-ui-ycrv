@@ -293,7 +293,7 @@ export default function Zap() {
     {/*  @ts-ignore */}
     if (balances[inputToken] && Number(formatUnits(balances[inputToken], 18)) >= 1) {
       if (!userInputAmount) {
-        setAmount('0');
+        setAmount('');
       } else {
         setAmount(userInputAmount);
       }
@@ -393,6 +393,11 @@ export default function Zap() {
     }
   }, [justApproved]);
 
+  const handleBalanceClick = (balance: string) => {
+    setUserInputAmount(balance);
+    setAmount(balance);
+  };
+
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Supercharge your yield with yCRV</h2>
@@ -405,11 +410,13 @@ export default function Zap() {
               options={filteredInputTokens.map(token => ({
                 address: token.address,
                 symbol: token.symbol,
-                // @ts-ignore
-                balance: Number(formatUnits(balances[token.address], 18)).toFixed(2)
+                balance: balances[token.address as keyof typeof balances] 
+                  ? formatUnits(balances[token.address as keyof typeof balances], 18)
+                  : '0.00'
               }))}
               value={inputToken}
               onChange={(value) => setInputToken(value)}
+              onBalanceClick={handleBalanceClick}
               isConnected={isConnected}
             />
             <input

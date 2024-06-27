@@ -12,10 +12,11 @@ interface CustomDropdownProps {
   options: DropdownOption[];
   value: string;
   onChange: (value: string) => void;
+  onBalanceClick: (balance: string) => void;
   isConnected: boolean;
 }
 
-export default function CustomDropdown({ options, value, onChange, isConnected }: CustomDropdownProps) {
+export default function CustomDropdown({ options, value, onChange, onBalanceClick, isConnected }: CustomDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -55,10 +56,18 @@ export default function CustomDropdown({ options, value, onChange, isConnected }
             height={20}
           />}
           <span className="ml-2 flex justify-between w-full">
-            <span>{isConnected && selectedOption?.symbol}</span>
-            {isConnected && selectedOption?.balance && <span>
-            {selectedOption.balance}
-            </span>}
+            <span className='font-bold'>{isConnected && selectedOption?.symbol}</span>
+            {isConnected && selectedOption?.balance && (
+              <span 
+                className="cursor-pointer hover:text-light-blue"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onBalanceClick(selectedOption.balance!);
+                }}
+              >
+                {Number(selectedOption.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            )}
           </span>
         </div>
         <span>▼</span>
@@ -81,10 +90,18 @@ export default function CustomDropdown({ options, value, onChange, isConnected }
                 height={20}
               />
               <span className="ml-2 flex justify-between w-full">
-                <span>{isConnected && option?.symbol}</span>
-                {isConnected && option?.balance && <span>
-                {option.balance}
-                </span>}
+                <span className='font-bold'>{isConnected && option?.symbol}</span>
+                {isConnected && option?.balance && (
+                  <span 
+                    className="cursor-pointer hover:text-light-blue"
+                    onClick={(e) => {
+                      // e.stopPropagation();
+                      onBalanceClick(option.balance!);
+                    }}
+                  >
+                    {Number(option.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                )}
               </span>
             </div>
           ))}
