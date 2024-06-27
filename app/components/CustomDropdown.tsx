@@ -12,7 +12,7 @@ interface CustomDropdownProps {
   options: DropdownOption[];
   value: string;
   onChange: (value: string) => void;
-  onBalanceClick: (balance: string) => void;
+  onBalanceClick?: (balance: string) => void;
   isConnected: boolean;
 }
 
@@ -59,21 +59,22 @@ export default function CustomDropdown({ options, value, onChange, onBalanceClic
             <span className='font-bold'>{isConnected && selectedOption?.symbol}</span>
             {isConnected && selectedOption?.balance && (
               <span 
-                className="cursor-pointer hover:text-light-blue"
-                onClick={(e) => {
+                className={onBalanceClick ? "cursor-pointer hover:text-light-blue mr-2" : "cursor-pointer mr-2"}
+                onClick={(onBalanceClick && selectedOption.balance) ? (e) => {
                   e.stopPropagation();
-                  onBalanceClick(selectedOption.balance!);
-                }}
+                  // @ts-ignore
+                  onBalanceClick(String(parseInt((selectedOption.balance.toString()))));
+                } : () => {}}
               >
                 {Number(selectedOption.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             )}
           </span>
         </div>
-        <span>▼</span>
+        <span className='hover:text-light-blue'>▼</span>
       </div>
       {isOpen && (
-        <div className="absolute z-10 w-full bg-white border rounded mt-1 max-h-60 overflow-auto">
+        <div className="absolute z-10 w-full bg-white border rounded mt-1 overflow-auto">
           {options.map((option) => (
             <div
               key={option.address}
@@ -93,13 +94,14 @@ export default function CustomDropdown({ options, value, onChange, onBalanceClic
                 <span className='font-bold'>{isConnected && option?.symbol}</span>
                 {isConnected && option?.balance && (
                   <span 
-                    className="cursor-pointer hover:text-light-blue"
-                    onClick={(e) => {
+                    className={onBalanceClick ? "cursor-pointer hover:text-light-blue" : "cursor-pointer"}
+                    onClick={(onBalanceClick && option.balance) ? (e) => {
                       // e.stopPropagation();
-                      onBalanceClick(option.balance!);
-                    }}
+                      // @ts-ignore
+                      onBalanceClick(String(parseInt((option.balance.toString()))));
+                    } : () => {}}
                   >
-                    {Number(option.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {Number(option.balance).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                   </span>
                 )}
               </span>

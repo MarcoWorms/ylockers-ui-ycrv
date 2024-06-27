@@ -137,7 +137,6 @@ export default function Zap() {
   const [inputApproved, setInputApproved] = useState(false);
   const [justApproved, setJustApproved] = useState(false);
 
-
   const { balances, refetch: refetchBalances, isLoading: balancesLoading, isError: balancesError } = useBalances();
 
   const { data: expectedOut } = useContractRead((!!debouncedAmount && !!inputToken && !!outputToken) ? {
@@ -263,8 +262,8 @@ export default function Zap() {
   }, [inputToken, outputToken]);
 
   useEffect(() => {
-    if (inputToken === '0x453D92C7d4263201C69aACfaf589Ed14202d83a4') {
-      setOutputToken('0x99f5aCc8EC2Da2BC0771c32814EFF52b712de1E5');
+    if (inputToken === '0xc97232527B62eFb0D8ed38CF3EA103A6CcA4037e') {
+      setOutputToken('0x6E9455D109202b426169F0d8f01A3332DAE160f3');
     }
   }, [inputToken]);
 
@@ -433,7 +432,7 @@ export default function Zap() {
           <label className="font-medium text-center">Zap to minimum of:</label>
           <div className='flex w-full space-x-4'>
             <CustomDropdown
-              options={OUTPUT_TOKENS.filter(token => token.address !== inputToken && (inputToken !== '0x453D92C7d4263201C69aACfaf589Ed14202d83a4' || token.address === '0x99f5aCc8EC2Da2BC0771c32814EFF52b712de1E5')).map(token => ({
+              options={OUTPUT_TOKENS.filter(token => token.address !== inputToken && (inputToken !== '0xc97232527B62eFb0D8ed38CF3EA103A6CcA4037e' || token.address === '0x6E9455D109202b426169F0d8f01A3332DAE160f3')).map(token => ({
                 address: token.address,
                 symbol: token.symbol,
                 // @ts-ignore
