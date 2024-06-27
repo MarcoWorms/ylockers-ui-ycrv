@@ -47,16 +47,18 @@ export default function CustomDropdown({ options, value, onChange, isConnected }
         className="p-2 border rounded text-blue w-full flex items-center justify-between cursor-pointer"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="flex items-center">
-          <Image
+        <div className="flex items-center w-full">
+          {isConnected && <Image
             src={getTokenLogo(selectedOption?.address)}
             alt={selectedOption?.symbol || ''}
             width={20}
             height={20}
-          />
-          <span className="ml-2">
-            {selectedOption?.symbol}
-            {isConnected && selectedOption?.balance && ` (${selectedOption.balance})`}
+          />}
+          <span className="ml-2 flex justify-between w-full">
+            <span>{isConnected && selectedOption?.symbol}</span>
+            {isConnected && selectedOption?.balance && <span>
+            {selectedOption.balance}
+            </span>}
           </span>
         </div>
         <span>▼</span>
@@ -78,9 +80,11 @@ export default function CustomDropdown({ options, value, onChange, isConnected }
                 width={20}
                 height={20}
               />
-              <span className="ml-2">
-                {option.symbol}
-                {isConnected && option.balance && ` (${option.balance})`}
+              <span className="ml-2 flex justify-between w-full">
+                <span>{isConnected && option?.symbol}</span>
+                {isConnected && option?.balance && <span>
+                {option.balance}
+                </span>}
               </span>
             </div>
           ))}

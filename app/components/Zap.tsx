@@ -37,6 +37,14 @@ const OUTPUT_TOKENS = [
   { address: '0x99f5aCc8EC2Da2BC0771c32814EFF52b712de1E5', symbol: 'yCRV-f v2' },
 ];
 
+const ONE_TO_ONE = [
+  '0xc5bDdf9843308380375a611c18B50Fb9341f502A', // yveCRV-DAO
+  '0x9d409a0A012CFbA9B15F6D4B36Ac57A46966Ab9a', // yvBOOST
+  '0xFCc5c47bE19d06BF83eB04298b026F81069ff65b', // yCRV
+  '0x27B5739e22ad9033bcBf192059122d163b60349D', // st-yCRV
+  '0xE9A115b77A1057C918F997c32663FdcE24FB873f', // YBS
+]
+
 function useSwapForErc20(inputToken: `0x${string}`, address: `0x${string}`) {
   const { data: approvalStatus, refetch: refetchApprovalStatus } = useContractRead(address ? {
     address: inputToken as `0x${string}`,
@@ -141,8 +149,14 @@ export default function Zap() {
 
   useEffect(() => {
     if (expectedOut) {
-      const allowableSlippage = 0.01;
-      setMinOut(bmath.mul((1 - allowableSlippage), expectedOut as bigint));
+      const allowableSlippage = 0.0003;
+      let minOut = null
+      if (ONE_TO_ONE.includes(inputToken) && ONE_TO_ONE.includes(outputToken)) {
+        minOut = bmath.mul(1, expectedOut as bigint)
+      } else {
+        minOut = bmath.mul((1 - allowableSlippage), expectedOut as bigint)
+      }
+      setMinOut(minOut);
     }
   }, [expectedOut]);
 
