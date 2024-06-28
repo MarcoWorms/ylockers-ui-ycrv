@@ -63,7 +63,7 @@ export default function CustomDropdown({ options, value, onChange, onBalanceClic
                 onClick={(onBalanceClick && selectedOption.balance) ? (e) => {
                   e.stopPropagation();
                   // @ts-ignore
-                  onBalanceClick(String(parseInt((selectedOption.balance.toString()))));
+                  onBalanceClick(selectedOption.balance);
                 } : () => {}}
               >
                 {Number(selectedOption.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -98,7 +98,7 @@ export default function CustomDropdown({ options, value, onChange, onBalanceClic
                     onClick={(onBalanceClick && option.balance) ? (e) => {
                       // e.stopPropagation();
                       // @ts-ignore
-                      onBalanceClick(String(parseInt((option.balance.toString()))));
+                      onBalanceClick(option.balance);
                     } : () => {}}
                   >
                     {Number(option.balance).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}

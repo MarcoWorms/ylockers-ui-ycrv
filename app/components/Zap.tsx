@@ -155,6 +155,13 @@ export default function Zap() {
       } else {
         minOut = bmath.mul((1 - allowableSlippage), expectedOut as bigint)
       }
+
+      if (outputToken === '0xE9A115b77A1057C918F997c32663FdcE24FB873f') {
+        const minOutDecimal = Number(formatUnits(minOut, 18));
+        const adjustedMinOut = minOutDecimal - 1e-18;
+        minOut = parseUnits(adjustedMinOut.toFixed(18), 18);
+      }
+
       setMinOut(minOut);
     }
   }, [expectedOut]);
@@ -251,7 +258,8 @@ export default function Zap() {
         address: '0x5271058928d31b6204fc95eee15fe9fbbdca681a',
         abi: abis.Zap,
         functionName: 'zap',
-        args: [inputToken, outputToken, parseUnits(debouncedAmount, 18), minOut],      });
+        args: [inputToken, outputToken, parseUnits(debouncedAmount, 18), minOut],
+      });
     }
   }
 
@@ -445,7 +453,7 @@ export default function Zap() {
             <input
               className="p-2 border rounded text-blue w-full"
               type="number"
-              value={Number(formatUnits(minOut, 18)).toFixed(2)}
+              value={Number(formatUnits(minOut, 18)).toFixed(18)}
               readOnly
               placeholder="You will receive a minimum of"
             /> 
