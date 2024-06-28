@@ -453,7 +453,7 @@ export default function Zap() {
             <input
               className="p-2 border rounded text-blue w-full"
               type="number"
-              value={Number(formatUnits(minOut, 18)).toFixed(18)}
+              value={minOut === 0n ? 0 : Number(formatUnits(minOut, 18)).toFixed(18)}
               readOnly
               placeholder="You will receive a minimum of"
             /> 
