@@ -411,7 +411,7 @@ export default function Zap() {
       <p className="mb-8">{`Zap any token within the yCRV ecosystem for any other. Maybe you want to zap for a higher yield, or maybe you just like zapping (it's ok, we don't judge).`}</p>
       <div className="space-y-4">
         <div className="flex flex-col space-y-2">
-          <label className="font-medium text-center">Zap from</label>
+          <label className="font-medium text-right">Zap from</label>
           <div className='flex w-full space-x-4'>
             <CustomDropdown
               options={filteredInputTokens.map(token => ({
@@ -437,7 +437,7 @@ export default function Zap() {
         </div>
         <div className="text-center text-2xl">↓</div>
         <div className="flex flex-col space-y-2">
-          <label className="font-medium text-center">Zap to minimum of:</label>
+          <label className="font-medium text-right">Zap to minimum of:</label>
           <div className='flex w-full space-x-4'>
             <CustomDropdown
               options={OUTPUT_TOKENS.filter(token => token.address !== inputToken && (inputToken !== '0xc97232527B62eFb0D8ed38CF3EA103A6CcA4037e' || token.address === '0x6E9455D109202b426169F0d8f01A3332DAE160f3')).map(token => ({
