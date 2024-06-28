@@ -386,7 +386,7 @@ export default function Zap() {
     };
     return {
       key: 'default',
-      text: <div>{`You have ${balances[inputToken as keyof typeof balances] ? Number(formatUnits(balances[inputToken as keyof typeof balances], 18)).toFixed(2) : '0.00'} ${INPUT_TOKENS.find(t => t.address === inputToken)?.symbol}`}</div>
+      text: <div>{/*`You have ${balances[inputToken as keyof typeof balances] ? Number(formatUnits(balances[inputToken as keyof typeof balances], 18)).toFixed(2) : '0.00'} ${INPUT_TOKENS.find(t => t.address === inputToken)?.symbol}`*/}</div>
     };
   }, [error, isApprovalPending, justApproved, isPending, isConfirmed, hash, amount, inputToken, outputToken, minOut, balances, needsInputApproval, needsOutputApproval]);
   
