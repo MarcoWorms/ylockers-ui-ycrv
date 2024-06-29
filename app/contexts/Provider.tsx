@@ -18,22 +18,22 @@ import env from '@/lib/env';
 
 const queryClient = new QueryClient();
 
-// const newMainnet = Object.assign({}, mainnet, {
-//   "id": 420420,
-//   "rpcUrls": {
-//     "default": {
-//       "http": ["https://virtual.mainnet.rpc.tenderly.co/f27fc283-2742-40d2-97cc-ffe73e9f5787"]
-//     }
-//   }
-// })
+const newMainnet = Object.assign({}, mainnet, {
+  "id": 6969,
+  "rpcUrls": {
+    "default": {
+      "http": ["https://virtual.mainnet.rpc.tenderly.co/3f8e22ef-19cc-41f2-8afa-0785f74fbcfe"]
+    }
+  }
+})
 
 const config = getDefaultConfig({
   appName: 'yPrisma',
   projectId: '84801a4fb569adb34f184f543b6d1762',
-  // chains: [newMainnet],
-  chains: [mainnet],
+  chains: [newMainnet],
+  // chains: [mainnet],
   transports: {
-    [mainnet.id]: http(process.env.NEXT_PUBLIC_RPC_1)
+    [6969]: http("https://virtual.mainnet.rpc.tenderly.co/3f8e22ef-19cc-41f2-8afa-0785f74fbcfe")
   },
   wallets: [{
     groupName: 'Popular',
@@ -47,7 +47,7 @@ const config = getDefaultConfig({
       safeWallet
     ]
   }],
-  ssr: true, // If your dApp uses server side rendering (SSR)
+  ssr: true,
 });
 
 export default function Provider ({
